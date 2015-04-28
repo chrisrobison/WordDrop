@@ -3,8 +3,8 @@ class JShape:Shape {
     
     Orientation 0
     
-    • | 0 |
-    | 1 |
+        | 0•|
+        | 1 |
     | 3 | 2 |
     
     Orientation 90
@@ -21,7 +21,7 @@ class JShape:Shape {
     Orientation 270
     
     | 0•| 1 | 2 |
-    | 3 |
+            | 3 |
     
     • marks the row/column indicator for the shape
     

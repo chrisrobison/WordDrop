@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Christopher Robison. All rights reserved.
 //
 
-// #1
 class Array2D<T> {
     let columns: Int
     let rows: Int

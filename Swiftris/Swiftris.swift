@@ -1,11 +1,11 @@
  let NumColumns = 10
- let NumRows = 20
+ let NumRows = 15
  
  let StartingColumn = 4
  let StartingRow = 0
  
- let PreviewColumn = 12
- let PreviewRow = 1
+ let PreviewColumn = 4
+ let PreviewRow = 0
  
  let PointsPerLine = 10
  let LevelThreshold = 250
@@ -28,6 +28,7 @@
     
     // Invoked when the game has reached a new level
     func gameDidLevelUp(swiftris: Swiftris)
+    
  }
  
  class Swiftris {
@@ -36,7 +37,8 @@
     var fallingShape:Shape?
     var delegate:SwiftrisDelegate?
     var score:Int
-    var level:Int
+    var level:UInt32
+    var shapeQueue:Array<Shape> = []
     
     init() {
         score = 0
@@ -44,20 +46,32 @@
         
         fallingShape = nil
         nextShape = nil
+        var tmpshape:Shape?
+        
+        for (var i=0; i < NumColumns; i++) {
+            tmpshape = Shape.random(i, startingRow: PreviewRow, level: level)
+            tmpshape?.moveTo(i, row: 0)
+            shapeQueue.append(tmpshape!)
+        }
+        
         blockArray = Array2D<Block>(columns: NumColumns, rows: NumRows)
     }
     
     func beginGame() {
         if (nextShape == nil) {
-            nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow)
+            nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow, level: level)
         }
         delegate?.gameDidBegin(self)
+    }
+    
+    func getLevel() -> UInt32 {
+        return self.level
     }
     
     // #2
     func newShape() -> (fallingShape:Shape?, nextShape:Shape?) {
         fallingShape = nextShape
-        nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow)
+        nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow, level: level)
         fallingShape?.moveTo(StartingColumn, row: StartingRow)
         
         if detectIllegalPlacement() {
@@ -136,9 +150,9 @@
             return ([], [])
         }
         // #4
-        let pointsEarned = removedLines.count * PointsPerLine * level
+        let pointsEarned = removedLines.count * PointsPerLine * Int(level)
         score += pointsEarned
-        if score >= level * LevelThreshold {
+        if score >= Int(level) * LevelThreshold {
             level += 1
             delegate?.gameDidLevelUp(self)
         }

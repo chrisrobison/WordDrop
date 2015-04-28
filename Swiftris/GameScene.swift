@@ -8,14 +8,14 @@
 
 import SpriteKit
 
-let BlockSize:CGFloat = 20.0
+let BlockSize:CGFloat = 32
 
 let TickLengthLevelOne = NSTimeInterval(600)
 
 class GameScene: SKScene {
     let gameLayer = SKNode()
     let shapeLayer = SKNode()
-    let LayerPosition = CGPoint(x: 6, y: -6)
+    let LayerPosition = CGPoint(x: 0, y: -16)
 
     var tick:(() -> ())?
     var tickLengthMillis = TickLengthLevelOne
@@ -89,14 +89,31 @@ class GameScene: SKScene {
             }
             let sprite = SKSpriteNode(texture: texture)
             // #5
-            sprite.position = pointForColumn(block.column, row:block.row - 2)
+            sprite.position = pointForColumn(block.column, row:block.row - 3)
+            
+            var myletter = SKLabelNode(fontNamed: "AvenirNext-Medium");
+            myletter.text = randomStringWithLength(1)
+            myletter.fontSize = 22
+            myletter.position = CGPoint(x:-1.5, y:-8)
+            myletter.fontColor = SKColor.blackColor()
+            
+            sprite.addChild(myletter)
+            
+            var myvalue = SKLabelNode(fontNamed: "AvenirNext-Medium");
+            myvalue.text = "\(LetterValues[myletter.text]!)"
+            myvalue.fontSize = 7
+            myvalue.position = CGPoint(x:8.75, y:-12.5)
+            myvalue.fontColor = SKColor.blackColor()
+            
+            sprite.addChild(myvalue)
+            
             shapeLayer.addChild(sprite)
             block.sprite = sprite
             
             // Animation
             sprite.alpha = 0
             // #6
-            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row), duration: NSTimeInterval(0.2))
+            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.2))
             moveAction.timingMode = .EaseOut
             let fadeInAction = SKAction.fadeAlphaTo(0.7, duration: 0.4)
             fadeInAction.timingMode = .EaseOut

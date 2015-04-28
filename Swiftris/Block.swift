@@ -39,17 +39,15 @@ enum BlockColor: Int, Printable {
 }
 
 class Block: Hashable, Printable {
-    // #2
     // Constants
     let color: BlockColor
     
-    // #3
     // Properties
     var column: Int
     var row: Int
+    var letter: String
     var sprite: SKSpriteNode?
     
-    // #4
     var spriteName: String {
         return color.spriteName
     }
@@ -61,14 +59,40 @@ class Block: Hashable, Printable {
     
     // #6
     var description: String {
-        return "\(color): [\(column), \(row)]"
+        return "\(letter): [\(column), \(row)]"
     }
     
+    var textureCache = Dictionary<String, SKTexture>()
+
     init(column:Int, row:Int, color:BlockColor) {
         self.column = column
         self.row = row
         self.color = color
+        self.letter = randomStringWithLength(1)
     }
+    
+
+}
+
+func randomStringWithLength (len : Int) -> String {
+    
+    let letters : NSString = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZAAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
+    
+    var randomString : NSMutableString = NSMutableString(capacity: len)
+    
+    for (var i=0; i < len; i++){
+        var length = UInt32 (letters.length)
+        var rand = arc4random_uniform(length)
+        randomString.appendFormat("%C", letters.characterAtIndex(Int(rand)))
+    }
+    
+    return randomString as String
+}
+
+let uppercaseLetters = Array(65...90).map {String(UnicodeScalar($0))}
+func randomLetter() -> String {
+    let randomIndex = arc4random_uniform(UInt32(uppercaseLetters.count))
+    return uppercaseLetters[Int(randomIndex)]
 }
 
 // #7

@@ -35,7 +35,8 @@ enum Orientation: Int, Printable {
 }
 
 // The number of total shape varieties
-let NumShapeTypes: UInt32 = 7
+let NumShapeTypes: UInt32 = 3
+// let Level = Swiftris.getLevel()
 
 // Shape indexes
 let FirstBlockIdx: Int = 0
@@ -103,7 +104,7 @@ class Shape: Hashable, Printable {
             for i in 0..<blockRowColumnTranslations.count {
                 let blockRow = row + blockRowColumnTranslations[i].rowDiff
                 let blockColumn = column + blockRowColumnTranslations[i].columnDiff
-                let newBlock = Block(column: blockColumn, row: blockRow, color: color)
+                let newBlock = Block(column: blockColumn, row: blockRow, color: BlockColor.random())
                 blocks.append(newBlock)
             }
         }
@@ -147,7 +148,6 @@ class Shape: Hashable, Printable {
         shiftBy(-1, rows:0)
     }
     
-    // #2
     final func shiftBy(columns: Int, rows: Int) {
         self.column += columns
         self.row += rows
@@ -157,28 +157,37 @@ class Shape: Hashable, Printable {
         }
     }
     
-    // #3
     final func moveTo(column: Int, row:Int) {
         self.column = column
         self.row = row
         rotateBlocks(orientation)
     }
     
-    final class func random(startingColumn:Int, startingRow:Int) -> Shape {
-        switch Int(arc4random_uniform(NumShapeTypes)) {
-            // #4
+    final class func random(startingColumn:Int, startingRow:Int, level:UInt32) -> Shape {
+        var cnt: UInt32 = level + 1
+        if level + 1 > NumShapeTypes {
+            cnt = NumShapeTypes
+        }
+        // cnt = 8
+        switch Int(arc4random_uniform(cnt)) {
         case 0:
-            return SquareShape(column:startingColumn, row:startingRow)
+            return SingleShape(column:startingColumn, row:startingRow)
         case 1:
-            return LineShape(column:startingColumn, row:startingRow)
+            return DoubleShape(column:startingColumn, row:startingRow)
         case 2:
-            return TShape(column:startingColumn, row:startingRow)
+            return TripleShape(column:startingColumn, row:startingRow)
         case 3:
-            return LShape(column:startingColumn, row:startingRow)
+            return TShape(column:startingColumn, row:startingRow)
         case 4:
-            return JShape(column:startingColumn, row:startingRow)
+            return LShape(column:startingColumn, row:startingRow)
         case 5:
+            return JShape(column:startingColumn, row:startingRow)
+        case 6:
             return SShape(column:startingColumn, row:startingRow)
+        case 7:
+            return SquareShape(column:startingColumn, row:startingRow)
+        case 8:
+            return LineShape(column:startingColumn, row:startingRow)
         default:
             return ZShape(column:startingColumn, row:startingRow)
         }
