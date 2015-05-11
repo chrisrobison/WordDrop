@@ -15,7 +15,7 @@ let TickLengthLevelOne = NSTimeInterval(600)
 class GameScene: SKScene {
     let gameLayer = SKNode()
     let shapeLayer = SKNode()
-    let LayerPosition = CGPoint(x: 0, y: -16)
+    let LayerPosition = CGPoint(x: 0, y: 0)
 
     var tick:(() -> ())?
     var tickLengthMillis = TickLengthLevelOne
@@ -92,7 +92,7 @@ class GameScene: SKScene {
             sprite.position = pointForColumn(block.column, row:block.row - 3)
             
             var myletter = SKLabelNode(fontNamed: "AvenirNext-Medium");
-            myletter.text = randomStringWithLength(1)
+            myletter.text = block.letter
             myletter.fontSize = 22
             myletter.position = CGPoint(x:-1.5, y:-8)
             myletter.fontColor = SKColor.blackColor()
@@ -145,7 +145,7 @@ class GameScene: SKScene {
         runAction(SKAction.waitForDuration(0.05), completion: completion)
     }
     
-    func animateCollapsingLines(linesToRemove: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>, completion:() -> ()) {
+    func animateCollapsingLines(tilesToRemove: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>, completion:() -> ()) {
         var longestDuration: NSTimeInterval = 0
         // #2
         for (columnIdx, column) in enumerate(fallenBlocks) {
@@ -154,7 +154,7 @@ class GameScene: SKScene {
                 let sprite = block.sprite!
                 // #3
                 let delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.05)
-                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.1)
+                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.5)
                 let moveAction = SKAction.moveTo(newPosition, duration: duration)
                 moveAction.timingMode = .EaseOut
                 sprite.runAction(
@@ -165,8 +165,8 @@ class GameScene: SKScene {
             }
         }
         
-        for (rowIdx, row) in enumerate(linesToRemove) {
-            for (blockIdx, block) in enumerate(row) {
+        for (rowIdx, word) in enumerate(tilesToRemove) {
+            for (blockIdx, block) in enumerate(word) {
                 // #4
                 let randomRadius = CGFloat(UInt(arc4random_uniform(400) + 100))
                 let goLeft = arc4random_uniform(100) % 2 == 0
@@ -174,7 +174,7 @@ class GameScene: SKScene {
                 var point = pointForColumn(block.column, row: block.row)
                 point = CGPointMake(point.x + (goLeft ? -randomRadius : randomRadius), point.y)
                 
-                let randomDuration = NSTimeInterval(arc4random_uniform(2)) + 0.5
+                let randomDuration = NSTimeInterval(arc4random_uniform(2)) + 0.75
                 // #5
                 var startAngle = CGFloat(M_PI)
                 var endAngle = startAngle * 2

@@ -148,11 +148,12 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     func gameShapeDidLand(swiftris: Swiftris) {
         scene.stopTicking()
         self.view.userInteractionEnabled = false
+        
         // #1
-        let removedLines = swiftris.removeCompletedLines()
-        if removedLines.linesRemoved.count > 0 {
+        let removedWords = swiftris.removeCompletedWords()
+        if removedWords.tilesRemoved.count > 0 {
             self.scoreLabel.text = "\(swiftris.score)"
-            scene.animateCollapsingLines(removedLines.linesRemoved, fallenBlocks:removedLines.fallenBlocks) {
+            scene.animateCollapsingLines(removedWords.tilesRemoved, fallenBlocks:removedWords.fallenBlocks) {
                 // #2
                 self.gameShapeDidLand(swiftris)
             }

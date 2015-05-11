@@ -164,10 +164,9 @@ class Shape: Hashable, Printable {
     }
     
     final class func random(startingColumn:Int, startingRow:Int, level:UInt32) -> Shape {
-        var cnt: UInt32 = level + 1
-        if level + 1 > NumShapeTypes {
-            cnt = NumShapeTypes
-        }
+        var cnt: UInt32 = level < NumShapeTypes ? level : NumShapeTypes
+        
+        // var startColumn = Int(arc4random_uniform(9))
         // cnt = 8
         switch Int(arc4random_uniform(cnt)) {
         case 0:

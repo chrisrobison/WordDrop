@@ -1,10 +1,10 @@
  let NumColumns = 10
- let NumRows = 15
+ let NumRows = 17
  
- let StartingColumn = 4
- let StartingRow = 0
+ let StartingColumn = 5
+ let StartingRow = 2
  
- let PreviewColumn = 4
+ let PreviewColumn = 5
  let PreviewRow = 0
  
  let PointsPerLine = 10
@@ -39,6 +39,7 @@
     var score:Int
     var level:UInt32
     var shapeQueue:Array<Shape> = []
+    let dataManager = DataManager()
     
     init() {
         score = 0
@@ -46,6 +47,8 @@
         
         fallingShape = nil
         nextShape = nil
+        
+        /*
         var tmpshape:Shape?
         
         for (var i=0; i < NumColumns; i++) {
@@ -53,6 +56,7 @@
             tmpshape?.moveTo(i, row: 0)
             shapeQueue.append(tmpshape!)
         }
+        */
         
         blockArray = Array2D<Block>(columns: NumColumns, rows: NumRows)
     }
@@ -89,8 +93,10 @@
             for block in shape.blocks {
                 if block.column < 0 || block.column >= NumColumns
                     || block.row < 0 || block.row >= NumRows {
+                        println("Detected illegal block placement [OUT OF BOUNDS]: (\(block.row),\(block.column))")
                         return true
                 } else if blockArray[block.column, block.row] != nil {
+                    println("Detected illegal block placement [SPACE OCCUPIED]: (\(block.row),\(block.column) - \(blockArray[block.column,block.row]))")
                     return true
                 }
             }
@@ -127,30 +133,53 @@
         delegate?.gameDidEnd(self)
     }
     
-    func removeCompletedLines() -> (linesRemoved: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>) {
+    func removeCompletedWords() -> (tilesRemoved: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>) {
         var removedLines = Array<Array<Block>>()
+        var removedTiles = Array<Array<Block>>()
+        var tiles = Array<Block>()
+        var points = 0
+        
         for var row = NumRows - 1; row > 0; row-- {
-            var rowOfBlocks = Array<Block>()
-            // #2
+            var rowOfBlocks = Array<Block?>()
+            var rowString = ""
+            var foundWords:[String]
+            var haveTiles = false
+            
+            // Get blocks for row
             for column in 0..<NumColumns {
                 if let block = blockArray[column, row] {
                     rowOfBlocks.append(block)
+                    rowString += block.letter
+                    haveTiles = true
+                } else {
+                    rowOfBlocks.append(nil)
+                    rowString += " "
                 }
             }
-            if rowOfBlocks.count == NumColumns {
-                removedLines.append(rowOfBlocks)
-                for block in rowOfBlocks {
-                    blockArray[block.column, block.row] = nil
+            
+            if (haveTiles) {
+                // Find any words in row aan
+                (foundWords, tiles) = dataManager.findWords(rowString, blocks: rowOfBlocks)
+            
+                if foundWords.count > 0 {
+                    // Move blocks into removedTiles array
+                    println(foundWords)
+                    removedTiles.append(tiles)
+                    for tile in tiles {
+                        points += LetterValues[tile.letter]!
+                        blockArray[tile.column, tile.row] = nil
+                    }
+                
                 }
             }
         }
         
         // #3
-        if removedLines.count == 0 {
+        if removedTiles.count == 0 {
             return ([], [])
         }
         // #4
-        let pointsEarned = removedLines.count * PointsPerLine * Int(level)
+        let pointsEarned = points * Int(level)
         score += pointsEarned
         if score >= Int(level) * LevelThreshold {
             level += 1
@@ -158,10 +187,12 @@
         }
         
         var fallenBlocks = Array<Array<Block>>()
-        for column in 0..<NumColumns {
+        for tile in removedTiles[0] {
+            var column = tile.column
+            
             var fallenBlocksArray = Array<Block>()
             // #5
-            for var row = removedLines[0][0].row - 1; row > 0; row-- {
+            for var row = tile.row - 1; row > 0; row-- {
                 if let block = blockArray[column, row] {
                     var newRow = row
                     while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
@@ -177,7 +208,9 @@
                 fallenBlocks.append(fallenBlocksArray)
             }
         }
-        return (removedLines, fallenBlocks)
+        
+        removedTiles.append(tiles)
+        return (removedTiles, fallenBlocks)
     }
     
     func dropShape() {
