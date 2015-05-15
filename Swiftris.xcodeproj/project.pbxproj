@@ -51,6 +51,7 @@
 		2661FF351AE8B80B00FA4284 /* ShapeDouble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2661FF341AE8B80B00FA4284 /* ShapeDouble.swift */; };
 		2661FF371AE9D50800FA4284 /* ShapeTriple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2661FF361AE9D50800FA4284 /* ShapeTriple.swift */; };
 		2661FF6E1AECCF8200FA4284 /* words.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2661FF6D1AECCF8200FA4284 /* words.txt */; };
+		26B699081B030B3D00011C63 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B699071B030B3D00011C63 /* Global.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +113,7 @@
 		2661FF341AE8B80B00FA4284 /* ShapeDouble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeDouble.swift; sourceTree = "<group>"; };
 		2661FF361AE9D50800FA4284 /* ShapeTriple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeTriple.swift; sourceTree = "<group>"; };
 		2661FF6D1AECCF8200FA4284 /* words.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = words.txt; sourceTree = "<group>"; };
+		26B699071B030B3D00011C63 /* Global.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +192,7 @@
 				2661FED81AE3616A00FA4284 /* GameScene.swift */,
 				2661FEDA1AE3616A00FA4284 /* GameViewController.swift */,
 				2661FF1C1AE55E5500FA4284 /* Swiftris.swift */,
+				26B699071B030B3D00011C63 /* Global.swift */,
 				2661FF0A1AE55C6500FA4284 /* Block.swift */,
 				2661FF0C1AE55CD400FA4284 /* Shape.swift */,
 				264885521AFC7B6600C66482 /* Shapes */,
@@ -372,6 +375,7 @@
 				2661FF331AE8AF5B00FA4284 /* ShapeSingle.swift in Sources */,
 				2661FF1D1AE55E5500FA4284 /* Swiftris.swift in Sources */,
 				2661FF371AE9D50800FA4284 /* ShapeTriple.swift in Sources */,
+				26B699081B030B3D00011C63 /* Global.swift in Sources */,
 				2661FF0D1AE55CD400FA4284 /* Shape.swift in Sources */,
 				2661FF091AE4853900FA4284 /* Array2D.swift in Sources */,
 				264885501AFAB2B500C66482 /* SwiftyJSON.swift in Sources */,
