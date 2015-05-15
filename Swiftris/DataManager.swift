@@ -8,17 +8,20 @@
 
 import Foundation
 
-let LetterValues: Dictionary<String, Int> = [    "A": 1, "B": 3, "C": 3, "D": 2, "E": 1,
+let LetterValues: Dictionary<String, Int> = [
+    "A": 1, "B": 3, "C": 3, "D": 2, "E": 1,
     "F": 4, "G": 2, "H": 4, "I": 1, "J": 8,
     "K": 5, "L": 1, "M": 3, "N": 1, "O": 1,
     "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
-    "U": 1, "V": 4, "W": 4, "X": 8, "Y": 4, "Z": 10 ]
+    "U": 1, "V": 4, "W": 4, "X": 8, "Y": 4,
+    "Z": 10 ]
 
 
 class DataManager {
-    var loaded:Bool
     var json:JSON
+    var letterQueue = Array<String>()
     let shortestWord:Int = 3
+    var level:Int
     
     func getWordsFromFileWithSuccess(success: ((data: NSData) -> Void)) {
         //1
@@ -30,7 +33,6 @@ class DataManager {
             if let data = NSData(contentsOfFile:filePath!,
                 options: NSDataReadingOptions.DataReadingUncached,
                 error:&readError) {
-                    self.loaded = true
                     success(data: data)
             }
         })
@@ -43,7 +45,7 @@ class DataManager {
         var letters = myletters
         
 //        while myblocks.count > shortestWord {
-        while count(myletters) > shortestWord {
+        while count(myletters) > shortestWord - 1 {
             // =========DEBUG========= //
             //  letters = "".join(myblocks.map({"\($0.letter)"}))
             // println("Looking for words in \(letters)")
@@ -100,6 +102,11 @@ class DataManager {
         
         for char in letters {
             letter = String(char)
+            
+            if letter == " " {
+                return ""
+            }
+            
             var found = subjson[letter]
             
             if (found != nil) {
@@ -120,18 +127,39 @@ class DataManager {
         return lastword
     }
     
-    init() {
-        self.loaded = false
+    func getLetter()->String {
+        if letterQueue.count == 0 {
+            self.level++
+            self.initLetters(Int(ceil(Double(self.level) / 5)))
+        }
+        let randomIndex = arc4random_uniform(UInt32(letterQueue.count))
+        let letter = letterQueue[Int(randomIndex)]
         
+        letterQueue.removeAtIndex(Int(randomIndex))
+        return letter
+    }
+    
+    func initLetters(setCount:Int) {
+        let letters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
+        var myletters = letters * setCount
+        self.letterQueue = map(letters) { s -> String in String(s) }
+    }
+    
+    init() {
         var path     = NSBundle.mainBundle().pathForResource("all", ofType: "json"),
-        url      = NSURL(fileURLWithPath: path!),
-        data     = NSData(contentsOfURL: url!),
-        content = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? [[String: AnyObject]]
+            url      = NSURL(fileURLWithPath: path!),
+            data     = NSData(contentsOfURL: url!),
+            content  = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? [[String: AnyObject]]
         
         
         self.json = JSON(data: data!)
+        self.level = 1
         
-        self.loaded = true
+        initLetters(1)
     }
     
+}
+func *(string: String, scalar: Int) -> String {
+    let array = Array(count: scalar, repeatedValue: string)
+    return "".join(array)
 }
