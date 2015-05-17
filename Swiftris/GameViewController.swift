@@ -16,6 +16,8 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var levelLabel: UILabel!
+    @IBOutlet weak var tilesLabel: UILabel!
+    @IBOutlet weak var lastWord: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +34,6 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         swiftris = Swiftris()
         swiftris.delegate = self
         swiftris.beginGame()
-
         
         // Present the scene.
         skView.presentScene(scene)
@@ -93,6 +94,7 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     
     func nextShape() {
         let newShapes = swiftris.newShape()
+        tilesLabel.text = "\(core.data.letterQueue.count)"
         if let fallingShape = newShapes.fallingShape {
             self.scene.addPreviewShapeToScene(newShapes.nextShape!) {}
             self.scene.movePreviewShape(fallingShape) {
@@ -102,10 +104,12 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
             }
         }
     }
-    
     func gameDidBegin(swiftris: Swiftris) {
         levelLabel.text = "\(swiftris.level)"
         scoreLabel.text = "\(swiftris.score)"
+        lastWord.text = ""
+        tilesLabel.text = "\(core.data.letterQueue.count)"
+        
         scene.tickLengthMillis = TickLengthLevelOne
 
         // The following is false when restarting a new game
@@ -128,12 +132,16 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     }
     
     func gameDidLevelUp(swiftris: Swiftris) {
+        swiftris.level = UInt32(core.data.level)
         levelLabel.text = "\(swiftris.level)"
-        if scene.tickLengthMillis >= 100 {
-            scene.tickLengthMillis -= 100
+        
+        if scene.tickLengthMillis >= 50 {
+            scene.tickLengthMillis -= 50
         } else if scene.tickLengthMillis > 50 {
             scene.tickLengthMillis -= 50
         }
+        // core.data.initLetters(Int(ceil(Double(swiftris.level) / 5)))
+        self.tilesLabel.text = "\(core.data.letterQueue.count)"
         scene.playSound("levelup.mp3")
     }
     
@@ -153,8 +161,18 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         let removedWords = swiftris.removeCompletedWords()
         if removedWords.tilesRemoved.count > 0 {
             self.scoreLabel.text = "\(swiftris.score)"
+            
+            while (swiftris.lastWords.count > 5) {
+                swiftris.lastWords.removeAtIndex(0)
+            }
+            var wordList = "\n".join(swiftris.lastWords)
+            self.lastWord.text = "\(wordList)"
+            self.tilesLabel.text = "\(core.data.letterQueue.count)"
+            
+            scene.animateFoundWords(core.data.queuedBlocks)
+            core.data.queuedBlocks.removeAll(keepCapacity: true)
             scene.animateCollapsingLines(removedWords.tilesRemoved, fallenBlocks:removedWords.fallenBlocks) {
-                // #2
+            
                 self.gameShapeDidLand(swiftris)
             }
             scene.playSound("bomb.mp3")
@@ -165,6 +183,9 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
     
     // #3
     func gameShapeDidMove(swiftris: Swiftris) {
+        if Int(swiftris.level) != core.data.level {
+            gameDidLevelUp(swiftris)
+        }
         scene.redrawShape(swiftris.fallingShape!) {}
     }
 }

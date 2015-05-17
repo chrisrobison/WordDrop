@@ -35,7 +35,7 @@ enum Orientation: Int, Printable {
 }
 
 // The number of total shape varieties
-let NumShapeTypes: UInt32 = 3
+let NumShapeTypes: UInt32 = 8
 // let Level = Swiftris.getLevel()
 
 // Shape indexes
@@ -90,6 +90,7 @@ class Shape: Hashable, Printable {
         self.column = column
         self.row = row
         self.orientation = orientation
+        
         initializeBlocks()
     }
     
@@ -164,7 +165,7 @@ class Shape: Hashable, Printable {
     }
     
     final class func random(startingColumn:Int, startingRow:Int, level:UInt32) -> Shape {
-        var cnt: UInt32 = level < NumShapeTypes ? level : NumShapeTypes
+        var cnt: UInt32 = level + 2 < NumShapeTypes ? level + 2 : NumShapeTypes
         
         // var startColumn = Int(arc4random_uniform(9))
         // cnt = 8
@@ -178,13 +179,13 @@ class Shape: Hashable, Printable {
         case 3:
             return TShape(column:startingColumn, row:startingRow)
         case 4:
-            return LShape(column:startingColumn, row:startingRow)
+            return SquareShape(column:startingColumn, row:startingRow)
         case 5:
             return JShape(column:startingColumn, row:startingRow)
         case 6:
-            return SShape(column:startingColumn, row:startingRow)
+            return LShape(column:startingColumn, row:startingRow)
         case 7:
-            return SquareShape(column:startingColumn, row:startingRow)
+            return SShape(column:startingColumn, row:startingRow)
         case 8:
             return LineShape(column:startingColumn, row:startingRow)
         default:

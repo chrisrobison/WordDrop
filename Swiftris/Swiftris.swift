@@ -1,14 +1,14 @@
  let NumColumns = 10
- let NumRows = 17
+ let NumRows = 18
  
- let StartingColumn = 5
+ let StartingColumn = 4
  let StartingRow = 2
  
- let PreviewColumn = 5
- let PreviewRow = 0
+ let PreviewColumn = 4
+ let PreviewRow = 1
  
  let PointsPerLine = 10
- let LevelThreshold = 250
+ let LevelThreshold = 100
 
  protocol SwiftrisDelegate {
     // Invoked when the current round of Swiftris ends
@@ -40,10 +40,15 @@
     var level:UInt32
     var shapeQueue:Array<Shape> = []
     let dataManager = DataManager()
+    var lastWord:String
+    var lastPoint:Int
+    var lastWords:Array<String> = []
     
     init() {
         score = 0
         level = 1
+        lastWord = ""
+        lastPoint = 0
         
         fallingShape = nil
         nextShape = nil
@@ -65,6 +70,7 @@
         if (nextShape == nil) {
             nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow, level: level)
         }
+        
         delegate?.gameDidBegin(self)
     }
     
@@ -93,10 +99,10 @@
             for block in shape.blocks {
                 if block.column < 0 || block.column >= NumColumns
                     || block.row < 0 || block.row >= NumRows {
-                        println("Detected illegal block placement [OUT OF BOUNDS]: (\(block.row),\(block.column))")
+                        //println("Detected illegal block placement [OUT OF BOUNDS]: (\(block.row),\(block.column))")
                         return true
                 } else if blockArray[block.column, block.row] != nil {
-                    println("Detected illegal block placement [SPACE OCCUPIED]: (\(block.row),\(block.column) - \(blockArray[block.column,block.row]))")
+                        //println("Detected illegal block placement [SPACE OCCUPIED]: (\(block.row),\(block.column) - \(blockArray[block.column,block.row]))")
                     return true
                 }
             }
@@ -109,7 +115,6 @@
             for block in shape.blocks {
                 blockArray[block.column, block.row] = block
             }
-            fallingShape = nil
             delegate?.gameShapeDidLand(self)
         }
     }
@@ -130,20 +135,70 @@
     func endGame() {
         score = 0
         level = 1
+        core.data.level = 1
+        
         delegate?.gameDidEnd(self)
+    }
+
+   /* Calculate points for a word including special bonus tiles
+    * Bonus values are based on the tile color and are as follows:
+    *
+    * Blue: 2L  Orange: 3L  Purple: 4L
+    * Red:  2W  Teal:   3W  Yellow: 4W
+    *
+    */
+    final func calculatePoints(tiles:Array<Block>) -> Int {
+        var points = 0, val = 0, wordMultipiers:[Int] = [], word = ""
+        
+        for tile in tiles {
+            var val = LetterValues[tile.letter]!
+            
+            switch tile.color {
+            case .Blue:         // 2L
+                val = val * 2
+            case .Orange:       // 3L
+                val = val * 3
+            case .Purple:       // 4L
+                val = val * 4
+            case .Red:          // 2W
+                wordMultipiers.append(2)
+            case .Teal:         // 3W
+                wordMultipiers.append(3)
+            case .Yellow:       // 4W
+                wordMultipiers.append(4)
+            case .Grey:         // No bonus
+                val = val + 0
+            }
+            
+            points += val
+            word += tile.letter
+        }
+        
+        var out = "\(word) +\(points)"
+        
+        // Loop over any word multipliers and apply bonus
+        for bonus in wordMultipiers {
+            out = out + "x\(bonus)W"
+            points = points * bonus
+        }
+        
+        lastWords.append(out)
+
+        return points
     }
     
     func removeCompletedWords() -> (tilesRemoved: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>) {
-        var removedLines = Array<Array<Block>>()
-        var removedTiles = Array<Array<Block>>()
-        var tiles = Array<Block>()
-        var points = 0
-        
+        var removedTiles = Array<Array<Block>>(),
+            tiles = Array<Block>(),
+            points = 0,
+            fallenBlocks = Array<Array<Block>>(),
+            queuedBlocks:[(String,Int,Array<Block>)] = [],
+            foundWords:[String]
+
         for var row = NumRows - 1; row > 0; row-- {
-            var rowOfBlocks = Array<Block?>()
-            var rowString = ""
-            var foundWords:[String]
-            var haveTiles = false
+            var rowOfBlocks = Array<Block?>(),
+                rowString = "",
+                haveTiles = false
             
             // Get blocks for row
             for column in 0..<NumColumns {
@@ -157,59 +212,120 @@
                 }
             }
             
+            // Check for words, calculate points when found
             if (haveTiles) {
-                // Find any words in row aan
                 (foundWords, tiles) = dataManager.findWords(rowString, blocks: rowOfBlocks)
-            
+
                 if foundWords.count > 0 {
-                    // Move blocks into removedTiles array
-                    println(foundWords)
                     removedTiles.append(tiles)
-                    for tile in tiles {
-                        points += LetterValues[tile.letter]!
-                        blockArray[tile.column, tile.row] = nil
-                    }
-                
+                    lastPoint = calculatePoints(tiles)
+                    score += lastPoint
+
+                    let tup = (foundWords[0], lastPoint, tiles)
+                    
+                    queuedBlocks.append(tup)
                 }
             }
         }
         
+        // Now check for vertical words
+        for column in 0..<NumColumns {
+            var colOfBlocks = Array<Block?>(),
+                colString = "",
+                haveTiles = false
+            
+            // Get blocks for column
+            for row in 0..<NumRows {
+                if let block = blockArray[column, row] {
+                    colOfBlocks.append(block)
+                    colString += block.letter
+                    haveTiles = true
+                } else {
+                    colOfBlocks.append(nil)
+                    colString += " "
+                }
+            }
+            
+            if (haveTiles) {
+                (foundWords, tiles) = dataManager.findWords(colString, blocks: colOfBlocks)
+                
+                if foundWords.count > 0 {
+                    removedTiles.append(tiles)
+                    lastPoint = calculatePoints(tiles)
+                    score += lastPoint
+                    
+                    let tup = (foundWords[0], lastPoint, tiles)
+                    
+                    queuedBlocks.append(tup)
+                }
+            }
+        }
+
         // #3
         if removedTiles.count == 0 {
             return ([], [])
         }
-        // #4
-        let pointsEarned = points * Int(level)
-        score += pointsEarned
-        if score >= Int(level) * LevelThreshold {
-            level += 1
+        
+        if core.data.level != Int(self.level) {
+            self.level = UInt32(core.data.level)
             delegate?.gameDidLevelUp(self)
         }
         
-        var fallenBlocks = Array<Array<Block>>()
+        core.data.queuedBlocks += queuedBlocks
+        
         for tile in removedTiles[0] {
-            var column = tile.column
+            blockArray[tile.column, tile.row] = nil
+        }
+        
+        for tile in removedTiles[0] {
+            var fallenBlocksArray:Array<Block> = []
             
-            var fallenBlocksArray = Array<Block>()
-            // #5
             for var row = tile.row - 1; row > 0; row-- {
-                if let block = blockArray[column, row] {
+                if let block = blockArray[tile.column, row] {
                     var newRow = row
-                    while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
+                    while (newRow < NumRows - 1 && blockArray[tile.column, newRow + 1] == nil) {
                         newRow++
                     }
                     block.row = newRow
-                    blockArray[column, row] = nil
-                    blockArray[column, newRow] = block
+                    blockArray[tile.column, row] = nil
+                    blockArray[tile.column, newRow] = block
                     fallenBlocksArray.append(block)
                 }
             }
-            if fallenBlocksArray.count > 0 {
-                fallenBlocks.append(fallenBlocksArray)
-            }
+            fallenBlocks.append(fallenBlocksArray)
         }
         
-        removedTiles.append(tiles)
+        // removedTiles.append(tiles)
+        var cols = [String]()
+        var fallenBlocksArray = Array<Block>()
+        
+        // Check for blocks hanging without support
+        for column in 0..<NumColumns - 1 {
+            for var row = NumRows - 2; row > 0; row-- {
+                if blockArray[column, row] != nil &&    // have block?
+                    (column==0 || blockArray[column - 1, row] == nil) &&    // is slot to left empty?
+                    (column==NumColumns-1 || blockArray[column + 1, row] == nil) &&   // is slot to right empty?
+                    blockArray[column, row + 1] == nil      // and is slot below empty
+                    {
+                        if let block = blockArray[column, row] {
+                            var newRow = row
+                            while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
+                                newRow++
+                            }
+                            block.row = newRow
+                            blockArray[column, row] = nil
+                            blockArray[column, newRow] = block
+                            fallenBlocksArray.append(block)
+                        }
+                        if fallenBlocksArray.count > 0 {
+                            fallenBlocks.append(fallenBlocksArray)
+                    }
+                }
+            }
+        }
+        core.data.queuedBlocks = queuedBlocks
+        
+        fallingShape = nil
         return (removedTiles, fallenBlocks)
     }
     

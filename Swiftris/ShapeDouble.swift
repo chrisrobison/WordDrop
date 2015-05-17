@@ -39,4 +39,5 @@ class DoubleShape:Shape {
             Orientation.TwoSeventy: blocks
         ]
     }
+    
 }

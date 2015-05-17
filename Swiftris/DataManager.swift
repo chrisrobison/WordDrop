@@ -18,10 +18,11 @@ let LetterValues: Dictionary<String, Int> = [
 
 
 class DataManager {
-    var json:JSON
-    var letterQueue = Array<String>()
     let shortestWord:Int = 3
-    var level:Int
+    var json:JSON,
+        letterQueue = Array<String>(),
+        queuedBlocks:[(String,Int,Array<Block>)] = [],
+        level:Int
     
     func getWordsFromFileWithSuccess(success: ((data: NSData) -> Void)) {
         //1
@@ -38,35 +39,25 @@ class DataManager {
         })
     }
     
-    func findWords(var myletters:String, blocks:Array<Block?>) -> ([String], Array<Block>) {
+    final func findWords(var myletters:String, blocks:Array<Block?>) -> ([String], Array<Block>) {
         var found = [String]()
         var length = count(myletters)
         var myblocks = blocks
         var letters = myletters
         
-//        while myblocks.count > shortestWord {
-        while count(myletters) > shortestWord - 1 {
-            // =========DEBUG========= //
-            //  letters = "".join(myblocks.map({"\($0.letter)"}))
-            // println("Looking for words in \(letters)")
-            // length = myblocks.count
-            
-            // println("Checking \(myletters) for words")
-            
+        while length > shortestWord - 1 {
             for index in shortestWord...length {
                 var gotone = checkWord(myletters.substringToIndex(advance(myletters.startIndex, index)))
                 if gotone != "" {
                     found.append(gotone)
                 }
             }
-            // myblocks.removeAtIndex(0)
-            
             myletters = myletters.substringFromIndex(advance(myletters.startIndex, 1))
             length = count(myletters)
         }
         
         if found.count < 1 {
-            println("Found no words in '\(letters)'")
+            // println("Found no words in '\(letters)'")
             return([], [])
         }
         // =========DEBUG========= //
@@ -92,7 +83,7 @@ class DataManager {
         
     }
     
-    func checkWord(word:String) -> String {
+    final func checkWord(word:String) -> String {
         var subjson = json,
         myword = "", letter:String,
         lastword = ""
@@ -139,9 +130,26 @@ class DataManager {
         return letter
     }
     
+    func randomizeLetterQueue(passes:Int) {
+        var tmparray:Array<String> = []
+        var myletters = self.letterQueue
+        var letter:String = ""
+        var pick:Int = 0
+        
+        for pass in 0...passes {
+            while (myletters.count > 0) {
+                let num = arc4random_uniform(UInt32(myletters.count))
+                tmparray.append(myletters[Int(num)])
+                myletters.removeAtIndex(Int(num))
+            }
+        }
+        self.letterQueue = tmparray
+    }
+    
     func initLetters(setCount:Int) {
         let letters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
         var myletters = letters * setCount
+        self.letterQueue.removeAll(keepCapacity: true)
         self.letterQueue = map(letters) { s -> String in String(s) }
     }
     

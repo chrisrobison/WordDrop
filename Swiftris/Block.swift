@@ -1,27 +1,36 @@
 import SpriteKit
 
 // #1
-let NumberOfColors: UInt32 = 6
+let NumberOfColors: UInt32 = 7
 
 // #2
 enum BlockColor: Int, Printable {
     
     // #3
-    case Blue = 0, Orange, Purple, Red, Teal, Yellow
+    case Grey = 0, Blue, Orange, Purple, Red, Teal, Yellow
     
     // #4
     var spriteName: String {
         switch self {
+        // Grey:            X - no bonuses
+        case .Grey:
+            return "grey"
+        // Blue:            2L - Double letter value
         case .Blue:
             return "blue"
+        // Orange:          3L - Triple letter value
         case .Orange:
             return "orange"
+        // Purple:          4L - Quadruple letter value
         case .Purple:
             return "purple"
+        // Red:             2W - Double word value
         case .Red:
             return "red"
+        // Teal             3W - Triple word value
         case .Teal:
             return "teal"
+        // Yellow           4W - Quadruple word value
         case .Yellow:
             return "yellow"
         }
@@ -34,7 +43,12 @@ enum BlockColor: Int, Printable {
     
     // #6
     static func random() -> BlockColor {
-        return BlockColor(rawValue:Int(arc4random_uniform(NumberOfColors)))!
+        var x = Int(arc4random_uniform(10))
+        if (x > 7) {
+            return BlockColor(rawValue:Int(arc4random_uniform(NumberOfColors)))!
+        } else {
+            return BlockColor(rawValue: 0)!
+        }
     }
 }
 
@@ -68,31 +82,8 @@ class Block: Hashable, Printable {
         self.column = column
         self.row = row
         self.color = color
-        self.letter = randomStringWithLength(1)
+        self.letter = core.data.getLetter()
     }
-    
-
-}
-
-func randomStringWithLength (len : Int) -> String {
-    
-    let letters : NSString = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZAAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
-    
-    var randomString : NSMutableString = NSMutableString(capacity: len)
-    
-    for (var i=0; i < len; i++){
-        var length = UInt32 (letters.length)
-        var rand = arc4random_uniform(length)
-        randomString.appendFormat("%C", letters.characterAtIndex(Int(rand)))
-    }
-    
-    return randomString as String
-}
-
-let uppercaseLetters = Array(65...90).map {String(UnicodeScalar($0))}
-func randomLetter() -> String {
-    let randomIndex = arc4random_uniform(UInt32(uppercaseLetters.count))
-    return uppercaseLetters[Int(randomIndex)]
 }
 
 // #7

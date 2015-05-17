@@ -10,12 +10,15 @@ import SpriteKit
 
 let BlockSize:CGFloat = 32
 
+
 let TickLengthLevelOne = NSTimeInterval(600)
 
 class GameScene: SKScene {
     let gameLayer = SKNode()
     let shapeLayer = SKNode()
-    let LayerPosition = CGPoint(x: 0, y: 0)
+    let pointsLayer = SKNode()
+    
+    let LayerPosition = CGPoint(x: 0, y: 4)
 
     var tick:(() -> ())?
     var tickLengthMillis = TickLengthLevelOne
@@ -89,9 +92,9 @@ class GameScene: SKScene {
             }
             let sprite = SKSpriteNode(texture: texture)
             // #5
-            sprite.position = pointForColumn(block.column, row:block.row - 3)
+            sprite.position = pointForColumn(block.column, row:block.row - 1)
             
-            var myletter = SKLabelNode(fontNamed: "AvenirNext-Medium");
+            var myletter = SKLabelNode(fontNamed: "AvenirNext-Bold");
             myletter.text = block.letter
             myletter.fontSize = 22
             myletter.position = CGPoint(x:-1.5, y:-8)
@@ -106,6 +109,7 @@ class GameScene: SKScene {
             myvalue.fontColor = SKColor.blackColor()
             
             sprite.addChild(myvalue)
+            sprite.zPosition = 5.0
             
             shapeLayer.addChild(sprite)
             block.sprite = sprite
@@ -113,7 +117,7 @@ class GameScene: SKScene {
             // Animation
             sprite.alpha = 0
             // #6
-            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.2))
+            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.3))
             moveAction.timingMode = .EaseOut
             let fadeInAction = SKAction.fadeAlphaTo(0.7, duration: 0.4)
             fadeInAction.timingMode = .EaseOut
@@ -145,17 +149,53 @@ class GameScene: SKScene {
         runAction(SKAction.waitForDuration(0.05), completion: completion)
     }
     
+    func animateFoundWords(queuedBlocks:[(String,Int,Array<Block>)]) {
+        var i=0
+        for (word, point, blocks) in queuedBlocks {
+            let sprite = SKSpriteNode()
+            var block = blocks[0]
+            
+            sprite.position = pointForColumn(block.column, row:block.row - 1)
+        
+            var myword = SKLabelNode(fontNamed: "AvenirNext-Bold");
+            myword.text = "\(word) +\(point)"
+            myword.fontSize = 18
+            myword.position = CGPoint(x:0, y:0)
+            myword.fontColor = SKColor.whiteColor()
+            
+            sprite.addChild(myword)
+            sprite.zPosition = 5.0
+            
+            shapeLayer.addChild(sprite)
+            
+            var actions = Array<SKAction>();
+            var delay = (NSTimeInterval(i) * 0.5)
+            actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(2)))
+            actions.append(SKAction.scaleTo(4.0, duration: NSTimeInterval(2)))
+            
+            let group = SKAction.group(actions);
+            sprite.runAction(
+                    SKAction.sequence([
+                        SKAction.waitForDuration(delay), group]))
+            
+            
+        }
+    }
+    
     func animateCollapsingLines(tilesToRemove: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>, completion:() -> ()) {
         var longestDuration: NSTimeInterval = 0
-        // #2
+        
         for (columnIdx, column) in enumerate(fallenBlocks) {
             for (blockIdx, block) in enumerate(column) {
                 let newPosition = pointForColumn(block.column, row: block.row)
                 let sprite = block.sprite!
-                // #3
+                
                 let delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.05)
-                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.5)
+                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.05)
                 let moveAction = SKAction.moveTo(newPosition, duration: duration)
+                
+                //println("Dropping block - delay:\(delay) duration:\(duration)")
+                
                 moveAction.timingMode = .EaseOut
                 sprite.runAction(
                     SKAction.sequence([
