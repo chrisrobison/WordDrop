@@ -52,6 +52,10 @@
 		2661FF371AE9D50800FA4284 /* ShapeTriple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2661FF361AE9D50800FA4284 /* ShapeTriple.swift */; };
 		2661FF6E1AECCF8200FA4284 /* words.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2661FF6D1AECCF8200FA4284 /* words.txt */; };
 		26B699081B030B3D00011C63 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B699071B030B3D00011C63 /* Global.swift */; };
+		26EA60E61B08A3CA00C83B44 /* Default-568h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E51B08A3CA00C83B44 /* Default-568h@3x.png */; };
+		26EA60E81B090A0A00C83B44 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E71B090A0A00C83B44 /* logo.png */; };
+		26EA60EB1B09720300C83B44 /* blackbg2.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E91B09720300C83B44 /* blackbg2.png */; };
+		26EA60EC1B09720300C83B44 /* blackbg2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60EA1B09720300C83B44 /* blackbg2@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +118,10 @@
 		2661FF361AE9D50800FA4284 /* ShapeTriple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeTriple.swift; sourceTree = "<group>"; };
 		2661FF6D1AECCF8200FA4284 /* words.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = words.txt; sourceTree = "<group>"; };
 		26B699071B030B3D00011C63 /* Global.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
+		26EA60E51B08A3CA00C83B44 /* Default-568h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@3x.png"; sourceTree = "<group>"; };
+		26EA60E71B090A0A00C83B44 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		26EA60E91B09720300C83B44 /* blackbg2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackbg2.png; sourceTree = "<group>"; };
+		26EA60EA1B09720300C83B44 /* blackbg2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackbg2@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +208,7 @@
 				2661FF6D1AECCF8200FA4284 /* words.txt */,
 				2648854F1AFAB2B500C66482 /* SwiftyJSON.swift */,
 				2661FF301AE8711400FA4284 /* Default-568h@2x.png */,
+				26EA60E51B08A3CA00C83B44 /* Default-568h@3x.png */,
 				2661FEF81AE47F6700FA4284 /* Sounds */,
 				2661FEDC1AE3616B00FA4284 /* Main.storyboard */,
 				2661FEFA1AE47F7500FA4284 /* Sprites.atlas */,
@@ -213,7 +222,10 @@
 		2661FED21AE3616A00FA4284 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				26EA60E91B09720300C83B44 /* blackbg2.png */,
+				26EA60EA1B09720300C83B44 /* blackbg2@2x.png */,
 				2661FF281AE86BEB00FA4284 /* blackbg.png */,
+				26EA60E71B090A0A00C83B44 /* logo.png */,
 				2661FF291AE86BEB00FA4284 /* blackbg@2x.png */,
 				2661FF2A1AE86BEB00FA4284 /* greybg.png */,
 				2661FF2B1AE86BEB00FA4284 /* greybg@2x.png */,
@@ -326,6 +338,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26EA60E81B090A0A00C83B44 /* logo.png in Resources */,
 				2661FF251AE712EF00FA4284 /* gameover.mp3 in Resources */,
 				2661FF051AE47F8F00FA4284 /* gameboard@2x.png in Resources */,
 				2661FEE31AE3616B00FA4284 /* LaunchScreen.xib in Resources */,
@@ -341,12 +354,15 @@
 				264885541B001BA100C66482 /* Media.xcassets in Resources */,
 				2661FF2D1AE86BEB00FA4284 /* blackbg@2x.png in Resources */,
 				2661FF261AE712EF00FA4284 /* levelup.mp3 in Resources */,
+				26EA60EB1B09720300C83B44 /* blackbg2.png in Resources */,
 				2661FEE01AE3616B00FA4284 /* Images.xcassets in Resources */,
 				2661FF031AE47F8F00FA4284 /* background@2x.png in Resources */,
 				2661FF2C1AE86BEB00FA4284 /* blackbg.png in Resources */,
+				26EA60EC1B09720300C83B44 /* blackbg2@2x.png in Resources */,
 				2661FF271AE712EF00FA4284 /* theme.mp3 in Resources */,
 				2661FEF91AE47F6700FA4284 /* Sounds in Resources */,
 				2661FEDE1AE3616B00FA4284 /* Main.storyboard in Resources */,
+				26EA60E61B08A3CA00C83B44 /* Default-568h@3x.png in Resources */,
 				2661FF061AE47F8F00FA4284 /* whitebg.png in Resources */,
 				2661FF071AE47F8F00FA4284 /* whitebg@2x.png in Resources */,
 				2661FEFB1AE47F7500FA4284 /* Sprites.atlas in Resources */,
