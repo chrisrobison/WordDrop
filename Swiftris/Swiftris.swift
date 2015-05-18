@@ -1,11 +1,13 @@
- let NumColumns = 10
+ import AVFoundation
+ 
+ let NumColumns = 8
  let NumRows = 18
  
  let StartingColumn = 4
- let StartingRow = 2
+ let StartingRow = 1
  
- let PreviewColumn = 4
- let PreviewRow = 1
+ let PreviewColumn = 9
+ let PreviewRow = 4
  
  let PointsPerLine = 10
  let LevelThreshold = 100
@@ -43,6 +45,8 @@
     var lastWord:String
     var lastPoint:Int
     var lastWords:Array<String> = []
+    let synth = AVSpeechSynthesizer()
+    var myUtterance = AVSpeechUtterance(string: "")
     
     init() {
         score = 0
@@ -148,7 +152,7 @@
     *
     */
     final func calculatePoints(tiles:Array<Block>) -> Int {
-        var points = 0, val = 0, wordMultipiers:[Int] = [], word = ""
+        var points = 0, val = 0, bonus:Int = 0, word = "", out = ""
         
         for tile in tiles {
             var val = LetterValues[tile.letter]!
@@ -161,11 +165,11 @@
             case .Purple:       // 4L
                 val = val * 4
             case .Red:          // 2W
-                wordMultipiers.append(2)
+                bonus += 2
             case .Teal:         // 3W
-                wordMultipiers.append(3)
+                bonus += 3
             case .Yellow:       // 4W
-                wordMultipiers.append(4)
+                bonus += 4
             case .Grey:         // No bonus
                 val = val + 0
             }
@@ -174,13 +178,11 @@
             word += tile.letter
         }
         
-        var out = "\(word) +\(points)"
-        
-        // Loop over any word multipliers and apply bonus
-        for bonus in wordMultipiers {
-            out = out + "x\(bonus)W"
+        if bonus > 0 {
             points = points * bonus
         }
+        
+        out = "\(word) +\(points)"
         
         lastWords.append(out)
 
@@ -193,7 +195,8 @@
             points = 0,
             fallenBlocks = Array<Array<Block>>(),
             queuedBlocks:[(String,Int,Array<Block>)] = [],
-            foundWords:[String]
+            foundWords:[String],
+            tempGrid = Array<String>()
 
         for var row = NumRows - 1; row > 0; row-- {
             var rowOfBlocks = Array<Block?>(),
@@ -212,6 +215,7 @@
                 }
             }
             
+            tempGrid.append(rowString)
             // Check for words, calculate points when found
             if (haveTiles) {
                 (foundWords, tiles) = dataManager.findWords(rowString, blocks: rowOfBlocks)
@@ -224,10 +228,16 @@
                     let tup = (foundWords[0], lastPoint, tiles)
                     
                     queuedBlocks.append(tup)
+                    
+                    myUtterance = AVSpeechUtterance(string: foundWords[0])
+                    myUtterance.rate = 0.3
+                    synth.speakUtterance(myUtterance)
                 }
             }
         }
-        
+        var tmp = "\n".join(tempGrid.reverse())
+        println(tmp)
+        println("\n------------\n")
         // Now check for vertical words
         for column in 0..<NumColumns {
             var colOfBlocks = Array<Block?>(),
@@ -257,6 +267,10 @@
                     let tup = (foundWords[0], lastPoint, tiles)
                     
                     queuedBlocks.append(tup)
+                    
+                    myUtterance = AVSpeechUtterance(string: foundWords[0])
+                    myUtterance.rate = 0.3
+                    synth.speakUtterance(myUtterance)
                 }
             }
         }
@@ -273,52 +287,65 @@
         
         core.data.queuedBlocks += queuedBlocks
         
-        for tile in removedTiles[0] {
-            blockArray[tile.column, tile.row] = nil
-        }
-        
-        for tile in removedTiles[0] {
-            var fallenBlocksArray:Array<Block> = []
-            
-            for var row = tile.row - 1; row > 0; row-- {
-                if let block = blockArray[tile.column, row] {
-                    var newRow = row
-                    while (newRow < NumRows - 1 && blockArray[tile.column, newRow + 1] == nil) {
-                        newRow++
-                    }
-                    block.row = newRow
-                    blockArray[tile.column, row] = nil
-                    blockArray[tile.column, newRow] = block
-                    fallenBlocksArray.append(block)
-                }
+        for tileQueue in removedTiles {
+            for tile in tileQueue {
+                blockArray[tile.column, tile.row] = nil
             }
-            fallenBlocks.append(fallenBlocksArray)
+        
+        
+            for tile in tileQueue {
+                var fallenBlocksArray:Array<Block> = []
+            
+                for var row = tile.row - 1; row > 0; row-- {
+                    if let block = blockArray[tile.column, row] {
+                        var newRow = row
+                        while (newRow < NumRows - 1 && blockArray[tile.column, newRow + 1] == nil) {
+                            newRow++
+                        }
+                        block.row = newRow
+                        blockArray[tile.column, row] = nil
+                        blockArray[tile.column, newRow] = block
+                        fallenBlocksArray.append(block)
+                    }
+                }
+                fallenBlocks.append(fallenBlocksArray)
+            }
         }
         
         // removedTiles.append(tiles)
         var cols = [String]()
         var fallenBlocksArray = Array<Block>()
+        var floating = false
         
         // Check for blocks hanging without support
-        for column in 0..<NumColumns - 1 {
+        for column in 0..<NumColumns {
             for var row = NumRows - 2; row > 0; row-- {
-                if blockArray[column, row] != nil &&    // have block?
-                    (column==0 || blockArray[column - 1, row] == nil) &&    // is slot to left empty?
-                    (column==NumColumns-1 || blockArray[column + 1, row] == nil) &&   // is slot to right empty?
-                    blockArray[column, row + 1] == nil      // and is slot below empty
-                    {
-                        if let block = blockArray[column, row] {
-                            var newRow = row
-                            while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
-                                newRow++
-                            }
-                            block.row = newRow
-                            blockArray[column, row] = nil
-                            blockArray[column, newRow] = block
-                            fallenBlocksArray.append(block)
+                floating = false
+                // Check if we have a block with no block below it
+                if blockArray[column, row] != nil && blockArray[column, row + 1] == nil {
+                    // check for anchors in next row
+                    if (column==0 || blockArray[column-1,row+1]==nil) && (column==NumColumns-1 || blockArray[column+1,row+1]==nil) {
+                        floating = true
+                    }
+                    // check anchoring blocks to the left and right
+                    if (column==0 || blockArray[column-1,row]==nil) && (column==NumColumns-1 || blockArray[column+1,row]==nil) {
+                        floating = true
+                    }
+                }
+                
+                if floating == true {
+                    if let block = blockArray[column, row] {
+                        var newRow = row
+                        while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
+                            newRow++
                         }
-                        if fallenBlocksArray.count > 0 {
-                            fallenBlocks.append(fallenBlocksArray)
+                        block.row = newRow
+                        blockArray[column, row] = nil
+                        blockArray[column, newRow] = block
+                        fallenBlocksArray.append(block)
+                    }
+                    if fallenBlocksArray.count > 0 {
+                        fallenBlocks.append(fallenBlocksArray)
                     }
                 }
             }
@@ -327,6 +354,10 @@
         
         fallingShape = nil
         return (removedTiles, fallenBlocks)
+    }
+    
+    func clearFloatingBlocks() {
+        
     }
     
     func dropShape() {

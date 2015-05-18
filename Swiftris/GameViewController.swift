@@ -105,10 +105,19 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         }
     }
     func gameDidBegin(swiftris: Swiftris) {
+        swiftris.level = 1
+        core.data.level = 1
+        swiftris.score = 0
+        
+        core.data.initLetters(Int(swiftris.level))
+        
         levelLabel.text = "\(swiftris.level)"
         scoreLabel.text = "\(swiftris.score)"
-        lastWord.text = ""
         tilesLabel.text = "\(core.data.letterQueue.count)"
+        lastWord.text = ""
+        lastWord.text = ""
+        
+        scene.animateLevelUp(Int(swiftris.level))
         
         scene.tickLengthMillis = TickLengthLevelOne
 
@@ -135,6 +144,8 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         swiftris.level = UInt32(core.data.level)
         levelLabel.text = "\(swiftris.level)"
         
+        scene.animateLevelUp(Int(swiftris.level))
+        
         if scene.tickLengthMillis >= 50 {
             scene.tickLengthMillis -= 50
         } else if scene.tickLengthMillis > 50 {
@@ -157,12 +168,11 @@ class GameViewController: UIViewController, SwiftrisDelegate, UIGestureRecognize
         scene.stopTicking()
         self.view.userInteractionEnabled = false
         
-        // #1
         let removedWords = swiftris.removeCompletedWords()
         if removedWords.tilesRemoved.count > 0 {
             self.scoreLabel.text = "\(swiftris.score)"
             
-            while (swiftris.lastWords.count > 5) {
+            while (swiftris.lastWords.count > 14) {
                 swiftris.lastWords.removeAtIndex(0)
             }
             var wordList = "\n".join(swiftris.lastWords)

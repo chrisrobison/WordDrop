@@ -109,7 +109,7 @@ class GameScene: SKScene {
             myvalue.fontColor = SKColor.blackColor()
             
             sprite.addChild(myvalue)
-            sprite.zPosition = 5.0
+            sprite.zPosition = 50
             
             shapeLayer.addChild(sprite)
             block.sprite = sprite
@@ -149,29 +149,69 @@ class GameScene: SKScene {
         runAction(SKAction.waitForDuration(0.05), completion: completion)
     }
     
+    func animateLevelUp(level:Int) {
+        let sprite = SKSpriteNode()
+        sprite.position = pointForColumn(4, row:7)
+        
+        var myword = SKLabelNode(fontNamed: "AvenirNext-Bold");
+        myword.text = "LEVEL \(level)"
+        myword.fontSize = 24
+        myword.position = CGPoint(x:0, y:0)
+        myword.fontColor = SKColor.whiteColor()
+        
+        sprite.addChild(myword)
+        sprite.zPosition = 100
+        
+        shapeLayer.addChild(sprite)
+
+        var actions = Array<SKAction>();
+        
+        actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(3)))
+        actions.append(SKAction.scaleTo(4.0, duration: NSTimeInterval(3)))
+        
+        let group = SKAction.group(actions);
+        sprite.runAction(SKAction.sequence([group]))
+    }
+    
     func animateFoundWords(queuedBlocks:[(String,Int,Array<Block>)]) {
         var i=0
         for (word, point, blocks) in queuedBlocks {
             let sprite = SKSpriteNode()
             var block = blocks[0]
+            var col = block.column
             
-            sprite.position = pointForColumn(block.column, row:block.row - 1)
+            // shift column origin if too close to left or right
+            if col < 3 {
+                col = col + (4 - col)
+            }
+            
+            sprite.position = pointForColumn(col, row:block.row - 1)
         
+            var myshadow = SKLabelNode(fontNamed: "AvenirNext-Bold");
+            myshadow.text = "\(word) +\(point)"
+            myshadow.fontSize = 12
+            myshadow.position = CGPoint(x:1, y:-1)
+            myshadow.fontColor = SKColor.blackColor()
+            sprite.addChild(myshadow)
+            
             var myword = SKLabelNode(fontNamed: "AvenirNext-Bold");
             myword.text = "\(word) +\(point)"
-            myword.fontSize = 18
+            myword.fontSize = 12
             myword.position = CGPoint(x:0, y:0)
             myword.fontColor = SKColor.whiteColor()
-            
+
             sprite.addChild(myword)
-            sprite.zPosition = 5.0
+            sprite.zPosition = 50
             
             shapeLayer.addChild(sprite)
             
             var actions = Array<SKAction>();
             var delay = (NSTimeInterval(i) * 0.5)
-            actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(2)))
-            actions.append(SKAction.scaleTo(4.0, duration: NSTimeInterval(2)))
+            
+            i++
+            
+            actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(3)))
+            actions.append(SKAction.scaleTo(4.0, duration: NSTimeInterval(3)))
             
             let group = SKAction.group(actions);
             sprite.runAction(
