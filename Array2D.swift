@@ -1,6 +1,6 @@
 //
 //  Array2D.swift
-//  Swiftris
+//  TheWordDrop
 //
 //  Created by Christopher Robison on 4/19/15.
 //  Copyright (c) 2015 Christopher Robison. All rights reserved.
