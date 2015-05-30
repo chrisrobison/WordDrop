@@ -23,7 +23,8 @@ class DataManager {
         letterQueue = Array<String>(),
         queuedBlocks:[(String,Int,Array<Block>)] = [],
         level:Int,
-        settingsScene:SKScene?
+        settingsScene:SKScene?,
+        BlockSize:CGFloat = 32.0
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",
