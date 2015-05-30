@@ -60,7 +60,7 @@ class Block: Hashable, Printable {
     var column: Int
     var row: Int
     var letter: String
-    var sprite: SKSpriteNode?
+    var sprite: SKShapeNode?
     
     var spriteName: String {
         return color.spriteName
