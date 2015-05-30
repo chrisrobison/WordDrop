@@ -81,7 +81,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         let currentPoint = sender.translationInView(self.view)
         if let originalPoint = panPointReference {
             // #3
-            if abs(currentPoint.x - originalPoint.x) > (BlockSize * 0.9) {
+            if abs(currentPoint.x - originalPoint.x) > (core.data.BlockSize * 0.9) {
                 // #4
                 if sender.velocityInView(self.view).x > CGFloat(0) {
                     theworddrop.moveShapeRight()
