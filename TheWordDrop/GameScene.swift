@@ -8,9 +8,6 @@
 
 import SpriteKit
 
-let BlockSize:CGFloat = 32
-
-
 let TickLengthLevelOne = NSTimeInterval(600)
 
 class GameScene: SKScene {
@@ -18,6 +15,7 @@ class GameScene: SKScene {
     let shapeLayer = SKNode()
     let pointsLayer = SKNode()
     let previewLayer = SKNode()
+    var BlockSize:CGFloat = 32
     
     let LayerPosition = CGPoint(x: 0, y: 0)
 
@@ -35,30 +33,34 @@ class GameScene: SKScene {
     
     override init(size: CGSize) {
         super.init(size: size)
+        self.BlockSize = self.size.height / 18
+        //self.BlockSize = self.size.width / 10
+        core.data.BlockSize = self.BlockSize
         
         anchorPoint = CGPoint(x: 0, y: 1.0)
         
         let background = SKSpriteNode(imageNamed: "background")
         background.position = CGPoint(x: 0, y: 0)
-        background.anchorPoint = CGPoint(x: 0, y: 1.0)
+        background.anchorPoint = anchorPoint
         addChild(background)
         addChild(gameLayer)
         
         let gameBoardTexture = SKTexture(imageNamed: "gameboard")
         // let gameBoard = SKSpriteNode(texture: gameBoardTexture, size: CGSizeMake(BlockSize * CGFloat(NumColumns), BlockSize * CGFloat(NumRows)))
         let gameBoard = SKSpriteNode(texture: gameBoardTexture, size: CGSizeMake(self.size.width, self.frame.height))
-        gameBoard.anchorPoint = CGPoint(x:0, y:1.0)
+        gameBoard.anchorPoint = anchorPoint
         gameBoard.position = LayerPosition
     
-        var x = self.frame.height
+        var x = self.frame.size.height
         
         shapeLayer.position = CGPoint(x:0, y:0)
         shapeLayer.addChild(gameBoard)
         gameLayer.addChild(shapeLayer)
         
-        let previewWidth = 60,
-            previewTop = 128
-        println("\(self.size.width)x\(self.size.height)")
+        let previewWidth = 62.0,
+            previewTop = 92.0
+        println("self.size: \(self.size.width)x\(self.size.height)")
+        println("self.frame.size: \(self.frame.size.width)x\(self.frame.size.height)")
         
         let previewShape = SKShapeNode(rectOfSize: CGSize(width:62.0, height:92.0), cornerRadius:5)
         previewShape.position = CGPoint(x:30, y:-47)
@@ -66,7 +68,7 @@ class GameScene: SKScene {
         previewShape.strokeColor = UIColor.clearColor()
         
         let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:62.0, height:92.0), cornerRadius:5)
-        previewShape2.position = CGPoint(x:30, y:-44)
+        previewShape2.position = CGPoint(x:30, y:-43)
         previewShape2.fillColor = UIColor.blackColor()
         previewShape2.strokeColor = UIColor.clearColor()
 
@@ -129,22 +131,35 @@ class GameScene: SKScene {
                 texture = SKTexture(imageNamed: block.spriteName)
                 textureCache[block.spriteName] = texture
             }
-            let sprite = SKSpriteNode(texture: texture)
+            var CGBlockSize = CGSize(width: BlockSize, height: BlockSize)
+            //let sprite = SKSpriteNode(color: UIColor.lightGrayColor(), size: CGBlockSize)
+            let sprite = SKShapeNode(rectOfSize: CGBlockSize, cornerRadius: 4.0)
+            sprite.fillColor = UIColor.lightGrayColor()
+            sprite.strokeColor = UIColor.darkGrayColor()
+            
             // #5
             sprite.position = pointForColumn(block.column, row:block.row - 1)
             
             var myletter = SKLabelNode(fontNamed: "AvenirNext-Bold");
             myletter.text = block.letter
-            myletter.fontSize = 22
-            myletter.position = CGPoint(x:-1.5, y:-8)
+            //       original = 22
+            //                  28
+            myletter.fontSize = self.size.height * 0.039 // 35
+            //                          x:-1.5, y:-8
+            //
+            myletter.position = CGPoint(x:-self.size.height * 0.0026, y:-self.size.height * 0.015)
             myletter.fontColor = SKColor.blackColor()
             
             sprite.addChild(myletter)
             
             var myvalue = SKLabelNode(fontNamed: "AvenirNext-Medium");
             myvalue.text = "\(LetterValues[myletter.text]!)"
-            myvalue.fontSize = 7
-            myvalue.position = CGPoint(x:8.75, y:-12.5)
+            //                  7
+            //                 12
+            myvalue.fontSize = self.size.height * 0.013 // 15
+            //                         x:8.75, y:-12.5
+            //                         x:12,   y:-15
+            myvalue.position = CGPoint(x:self.size.height * 0.016, y:-self.size.height * 0.022)
             myvalue.fontColor = SKColor.blackColor()
             
             sprite.addChild(myvalue)
