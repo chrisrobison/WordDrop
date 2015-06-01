@@ -15,3 +15,4 @@ class Core {
     }
 }
 var core = Core(name:"My Global Class")
+
