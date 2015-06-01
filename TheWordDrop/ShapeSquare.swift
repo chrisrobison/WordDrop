@@ -34,7 +34,7 @@ class SquareShape:Shape {
             Orientation.Zero:       [(0, 0),(1, 0),(0, 1),(1, 1)],
             Orientation.OneEighty:  [(1, 1),(0, 1),(1, 0),(0, 0)],
             Orientation.Ninety:     [(1, 0),(1, 1),(0, 0),(0, 1)],
-            Orientation.TwoSeventy: [(0, 1),(0, 0),(1, 1),(0, 0)]
+            Orientation.TwoSeventy: [(0, 1),(0, 0),(1, 1),(1, 0)]
         ]
     }
     
