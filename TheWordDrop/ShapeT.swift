@@ -30,10 +30,10 @@ class TShape:Shape {
     
     override var blockRowColumnPositions: [Orientation: Array<(columnDiff: Int, rowDiff: Int)>] {
         return [
-            Orientation.Zero:       [(1, 0), (0, 1), (1, 1), (2, 1)],
-            Orientation.Ninety:     [(2, 1), (1, 0), (1, 1), (1, 2)],
-            Orientation.OneEighty:  [(1, 2), (0, 1), (1, 1), (2, 1)],
-            Orientation.TwoSeventy: [(0, 1), (1, 0), (1, 1), (1, 2)]
+            Orientation.Zero:       [(0, -1), (-1, 0), (0, 0), (1, 0)],
+            Orientation.Ninety:     [(1, 0), (0, -1), (0, 0), (0, 1)],
+            Orientation.OneEighty:  [(0, 1), (-1, 0), (0, 0), (1, 0)],
+            Orientation.TwoSeventy: [(-1, 0), (0, -1), (0, 0), (0, 1)]
         ]
     }
     
