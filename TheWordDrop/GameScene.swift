@@ -148,20 +148,20 @@ class GameScene: SKScene {
     }
     
     func addPreviewShapeToScene(shape:Shape, completion:() -> ()) {
+        let blockRowColumnTranslations = shape.blockRowColumnPositions[shape.orientation]
+        var destX = LayerPosition.x + (CGFloat(shape.column) * BlockSize) + (BlockSize / 2)
+        var destY = LayerPosition.y + (CGFloat(shape.row - 1) * BlockSize) + (BlockSize / 2)
+
         for (idx, block) in enumerate(shape.blocks) {
-            // #4
             var texture = textureCache[block.spriteName]
             if texture == nil {
                 texture = SKTexture(imageNamed: block.spriteName)
                 textureCache[block.spriteName] = texture
             }
             var CGBlockSize = CGSize(width: BlockSize, height: BlockSize)
-            //let sprite = SKSpriteNode(color: UIColor.lightGrayColor(), size: CGBlockSize)
             let sprite = SKShapeNode(rectOfSize: CGBlockSize, cornerRadius: 4.0)
             sprite.fillColor = UIColor.lightGrayColor()
             sprite.strokeColor = UIColor.darkGrayColor()
-            
-            // #5
             sprite.position = pointForColumn(block.column, row:block.row - 1)
             
             var myletter = SKLabelNode(fontNamed: "AvenirNext-Bold");
@@ -203,13 +203,29 @@ class GameScene: SKScene {
             // Animation
             sprite.alpha = 0
             // #6
-            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.4))
+            
+            println("blockRowColumnPositions: (\(idx)) - \(blockRowColumnTranslations?[idx])")
+            var newX = destX
+            var newY = destY
+            
+            if let colDiff = blockRowColumnTranslations?[idx].0 {
+                newX = CGFloat(newX) + (CGFloat(colDiff) * CGFloat(BlockSize / 2)) + 4 + (BlockSize / 2)
+            }
+            
+            if let rowDiff = blockRowColumnTranslations?[idx].1 {
+                newY = CGFloat(newY) + (CGFloat(rowDiff) * CGFloat(BlockSize / 2)) - 10
+            }
+            
+            println("block[\(idx)] - destX: \(destX)  newX: \(newX)")
+            println("block[\(idx)] - destY: \(destY)  newY: \(newY)")
+//            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.4))
+            let moveAction = SKAction.moveTo(CGPointMake(newX, -newY), duration: NSTimeInterval(0.5))
             moveAction.timingMode = .EaseOut
     
-            let scaleAction = SKAction.scaleTo(0.5, duration: NSTimeInterval(0.4))
+            let scaleAction = SKAction.scaleTo(0.5, duration: NSTimeInterval(0.5))
             scaleAction.timingMode = .EaseOut
             
-            let fadeInAction = SKAction.fadeAlphaTo(0.7, duration: 0.4)
+            let fadeInAction = SKAction.fadeAlphaTo(1.0, duration: 0.5)
             fadeInAction.timingMode = .EaseOut
             
             sprite.runAction(SKAction.group([moveAction, scaleAction, fadeInAction]))
