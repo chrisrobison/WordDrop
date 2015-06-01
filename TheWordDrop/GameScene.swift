@@ -23,7 +23,7 @@ class GameScene: SKScene {
     var tickLengthMillis = TickLengthLevelOne
     var lastTick:NSDate?
     var gameOverView: SKView?
-    
+    var sounds = [String:SKAction]()
 
     var textureCache = Dictionary<String, SKTexture>()
 
@@ -51,40 +51,62 @@ class GameScene: SKScene {
         gameBoard.anchorPoint = anchorPoint
         gameBoard.position = LayerPosition
     
-        var x = self.frame.size.height
+        let previewWidth = self.frame.size.width * 0.20
         
         shapeLayer.position = CGPoint(x:0, y:0)
         shapeLayer.addChild(gameBoard)
         gameLayer.addChild(shapeLayer)
         
-        let previewWidth = 62.0,
-            previewTop = 92.0
+        let  previewTop = 92.0
         println("self.size: \(self.size.width)x\(self.size.height)")
         println("self.frame.size: \(self.frame.size.width)x\(self.frame.size.height)")
         
-        let previewShape = SKShapeNode(rectOfSize: CGSize(width:62.0, height:92.0), cornerRadius:5)
-        previewShape.position = CGPoint(x:30, y:-47)
-        previewShape.fillColor = UIColor.whiteColor()
-        previewShape.strokeColor = UIColor.clearColor()
+        previewLayer.position = LayerPosition
+        println("previewWidth: \(previewWidth)")
         
-        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:62.0, height:92.0), cornerRadius:5)
-        previewShape2.position = CGPoint(x:30, y:-43)
-        previewShape2.fillColor = UIColor.blackColor()
-        previewShape2.strokeColor = UIColor.clearColor()
-
-        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:62, height:96))
-        previewNode.anchorPoint = CGPoint(x:0, y:1.0)
-        previewNode.position = CGPoint(x:self.size.width - 62, y: -66)
+        var previewNode = makeInfoPanel(previewWidth)
+        previewNode.position = CGPoint(x:self.size.width - (previewWidth / 2), y: -((previewWidth * 2) - (previewWidth / 2) + 3))
         
-        previewNode.addChild(previewShape)
-        previewNode.addChild(previewShape2)
-        
-        gameLayer.addChild(previewNode)
+        //gameLayer.addChild(previewNode)
+        previewLayer.addChild(previewNode)
+        gameLayer.addChild(previewLayer)
         
         core.data.settingsScene = StartScene(size: self.size)
 
+        
         runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
 
+        self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
+    }
+    
+    func makeInfoPanel(previewWidth: CGFloat) -> SKSpriteNode {
+        let previewShape = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:5)
+        previewShape.position = CGPoint(x:0, y:-3)
+        previewShape.fillColor = UIColor.whiteColor()
+        previewShape.strokeColor = UIColor.clearColor()
+        
+        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:5)
+        previewShape2.position = CGPoint(x:0, y:0)
+        previewShape2.fillColor = UIColor.blackColor()
+        previewShape2.strokeColor = UIColor.clearColor()
+        
+        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:previewWidth - 8, height:previewWidth + 3))
+        previewNode.anchorPoint = CGPoint(x:0, y:1.0)
+        
+        previewNode.addChild(previewShape)
+        previewNode.addChild(previewShape2)
+
+        return previewNode
+    }
+    
+    func preloadSounds(sounds: [String]) -> [String:SKAction] {
+        var cache = [String:SKAction]()
+        
+        for sf in sounds {
+            cache[sf] = SKAction.playSoundFileNamed(sf, waitForCompletion: false)
+        }
+        
+        return cache
     }
 
     override func didMoveToView(view: SKView) {
@@ -107,7 +129,9 @@ class GameScene: SKScene {
     }
 
     func playSound(sound:String) {
-        runAction(SKAction.playSoundFileNamed(sound, waitForCompletion: false))
+        println("Playing sound '\(sound)'")
+        println("\(self.sounds[sound])")
+        runAction(sounds[sound])
     }
     
     func startTicking() {
@@ -166,6 +190,7 @@ class GameScene: SKScene {
             sprite.zPosition = 50
             
             shapeLayer.addChild(sprite)
+            //previewLayer.addChild(sprite)
             block.sprite = sprite
             
             /*
@@ -234,6 +259,7 @@ class GameScene: SKScene {
         var actions = Array<SKAction>();
         var delay = NSTimeInterval(3)
 
+        
         actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(3)))
         actions.append(SKAction.scaleTo(6.0, duration: NSTimeInterval(3)))
         

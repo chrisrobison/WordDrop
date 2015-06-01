@@ -60,16 +60,6 @@
         fallingShape = nil
         nextShape = nil
         
-        /*
-        var tmpshape:Shape?
-        
-        for (var i=0; i < NumColumns; i++) {
-            tmpshape = Shape.random(i, startingRow: PreviewRow, level: level)
-            tmpshape?.moveTo(i, row: 0)
-            shapeQueue.append(tmpshape!)
-        }
-        */
-        
         blockArray = Array2D<Block>(columns: NumColumns, rows: NumRows)
     }
     

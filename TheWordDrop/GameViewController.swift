@@ -10,15 +10,23 @@ import Foundation
 import UIKit
 import SpriteKit
 
+var on6plus : Bool {
+    return UIScreen.mainScreen().traitCollection.displayScale > 2.5
+}
+
 class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecognizerDelegate, StartSceneDelegate {
     var scene: GameScene!
     var theworddrop:TheWordDrop!
     var panPointReference:CGPoint?
     
     @IBOutlet weak var scoreLabel: UILabel!
+    @IBOutlet weak var scoreTitle: UILabel!
     @IBOutlet weak var levelLabel: UILabel!
+    @IBOutlet weak var levelTitle: UILabel!
     @IBOutlet weak var tilesLabel: UILabel!
+    @IBOutlet weak var tilesTitle: UILabel!
     @IBOutlet weak var lastWord: UILabel!
+    @IBOutlet weak var infoPanel: UIView!
     @IBAction func settingsAction(sender: UIButton) {
         let skView = view as! SKView
         skView.multipleTouchEnabled = false
@@ -45,8 +53,41 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         theworddrop.delegate = self
         theworddrop.beginGame()
         
+        adjustFontsForScreenSize()
+        
         // Present the scene.
         skView.presentScene(scene)
+    }
+    
+    func adjustFontsForScreenSize() {
+        var fontAdjustment = 0
+        
+        if UIScreen.mainScreen().bounds.size.height == 480 {
+            core.data.screenSize = 480
+            // iPhone 4
+            fontAdjustment = -2
+        } else if UIScreen.mainScreen().bounds.size.height == 568 {
+            core.data.screenSize = 568
+            // IPhone 5
+            fontAdjustment = -2
+        } else if UIScreen.mainScreen().bounds.size.width == 375 {  // *Perfect*
+            core.data.screenSize = 375
+            // iPhone 6
+            fontAdjustment = 0
+        } else if UIScreen.mainScreen().bounds.size.width == 414 {  // *Perfect*
+            core.data.screenSize = 414
+            // iPhone 6+
+            fontAdjustment = 3
+        } else if UIScreen.mainScreen().bounds.size.width == 768 {  // *Perfect*
+            core.data.screenSize = 768
+            // iPad
+            fontAdjustment = 0
+        }
+        
+        for lab in [self.scoreLabel, self.levelLabel, self.tilesLabel, self.scoreTitle, self.levelTitle, self.tilesTitle] {
+            let f = lab.font
+            lab.font = f.fontWithSize(f.pointSize + CGFloat(fontAdjustment))
+        }
     }
     
     func didMoveToView(view:SKView) {
@@ -182,6 +223,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         scene.redrawShape(theworddrop.fallingShape!) {
             theworddrop.letShapeFall()
         }
+        
         scene.playSound("drop.mp3")
     }
     
