@@ -1,15 +1,12 @@
+import UIKit
 import SpriteKit
 
-// #1
 let NumberOfColors: UInt32 = 7
 
-// #2
 enum BlockColor: Int, Printable {
     
-    // #3
     case Grey = 0, Blue, Orange, Purple, Red, Teal, Yellow
     
-    // #4
     var spriteName: String {
         switch self {
         // Grey:            X - no bonuses
@@ -29,22 +26,48 @@ enum BlockColor: Int, Printable {
             return "red"
         // Teal             3W - Triple word value
         case .Teal:
-            return "teal"
+            return "cyan"
         // Yellow           4W - Quadruple word value
         case .Yellow:
             return "yellow"
         }
     }
     
-    // #5
+    var spriteColor: UIColor {
+        switch self {
+            // Grey:            X - no bonuses
+        case .Grey:
+            return UIColor.lightGrayColor()
+            // Blue:            2L - Double letter value
+        case .Blue:
+            return UIColor.blueColor()
+            // Orange:          3L - Triple letter value
+        case .Orange:
+            return UIColor.orangeColor()
+            // Purple:          4L - Quadruple letter value
+        case .Purple:
+            return UIColor.purpleColor()
+            // Red:             2W - Double word value
+        case .Red:
+            return UIColor.redColor()
+            // Teal             3W - Triple word value
+        case .Teal:
+            return UIColor.cyanColor()
+            // Yellow           4W - Quadruple word value
+        case .Yellow:
+            return UIColor.yellowColor()
+        }
+    }
+
     var description: String {
         return self.spriteName
     }
     
-    // #6
     static func random() -> BlockColor {
+        // 80% of the time, give a normal, grey (0) tile
+        // 20% of the time, assign a random color
         var x = Int(arc4random_uniform(10))
-        if (x > 7) {
+        if (x > 8) {
             return BlockColor(rawValue:Int(arc4random_uniform(NumberOfColors)))!
         } else {
             return BlockColor(rawValue: 0)!
@@ -61,17 +84,17 @@ class Block: Hashable, Printable {
     var row: Int
     var letter: String
     var sprite: SKShapeNode?
-    
+    var spriteColor: UIColor {
+            return color.spriteColor
+    }
     var spriteName: String {
         return color.spriteName
     }
     
-    // #5
     var hashValue: Int {
         return self.column ^ self.row
     }
     
-    // #6
     var description: String {
         return "\(letter): [\(column), \(row)]"
     }
@@ -86,7 +109,6 @@ class Block: Hashable, Printable {
     }
 }
 
-// #7
 func ==(lhs: Block, rhs: Block) -> Bool {
     return lhs.column == rhs.column && lhs.row == rhs.row && lhs.color.rawValue == rhs.color.rawValue
 }
