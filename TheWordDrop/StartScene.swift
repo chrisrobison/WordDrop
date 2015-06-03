@@ -23,24 +23,37 @@ class StartScene: SKScene {
         self.backgroundColor = SKColor.blackColor()
         
         let message = "Game Over"
-        let replayMessage = "Start Game"
         
         var label = SKLabelNode(fontNamed: "AvenirNext-Bold")
         label.text = message
-        label.fontSize = 30
+        label.fontSize = 36
         label.fontColor = SKColor.yellowColor()
         label.position = CGPointMake(self.size.width/2, self.size.height/2)
         self.addChild(label)
         
-        //4
-        var replayButton = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        replayButton.text = replayMessage
-        replayButton.fontSize = 30
-        replayButton.fontColor = SKColor.whiteColor()
-        replayButton.position = CGPointMake(self.size.width/2, 50)
-        replayButton.name = "replay"
+    }
+    
+    override func didMoveToView(view: SKView) {
+        println("didMoveToView called in StartScene")
         
-        self.addChild(replayButton)
+        let leftMargin = (view.bounds.width/2) / 2
+        let topMargin = view.bounds.height/2
+
+        let playAgainButton = UIButton(frame: CGRectMake(leftMargin, topMargin + 30, view.bounds.width / 2, 50))
+        playAgainButton.backgroundColor = UIColor(hue: 206.0/360.0, saturation: 0.66, brightness: 0.5, alpha: 1.0)
+        playAgainButton.setTitle("Play Again", forState: UIControlState.Normal)
+        playAgainButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+        playAgainButton.addTarget(self, action: "buttonAction:", forControlEvents: UIControlEvents.TouchDown)
+        self.view!.addSubview(playAgainButton)
+        
+        
+    }
+    
+    func buttonAction(sender:UIButton) {
+        if sender.currentTitle=="Play Again" {
+            // close StartScene and start the game again
+            self.thisDelegate!.startSceneDidFinish(self, command: "restart")
+        }
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
