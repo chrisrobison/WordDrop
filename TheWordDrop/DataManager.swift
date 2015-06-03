@@ -25,7 +25,8 @@ class DataManager {
         level:Int,
         settingsScene:SKScene?,
         BlockSize:CGFloat = 32.0,
-        screenSize = 0.0
+        screenSize = 0.0,
+        wordCache = [String: Int]()
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",
@@ -97,6 +98,11 @@ class DataManager {
         myword = "", letter:String,
         lastword = ""
         
+        if ((wordCache[word]) != nil) {
+            return ""
+        }
+        wordCache[word] = 1
+        
         var letters = Array(word + "$")
         // println("checkWord: looking for: \(letters)")
         
@@ -163,6 +169,8 @@ class DataManager {
         self.letterQueue.removeAll(keepCapacity: true)
         self.letterQueue = map(letters) { s -> String in String(s) }
         self.randomizeLetterQueue(4)
+        
+        wordCache.removeAll()
     }
     
     init() {
