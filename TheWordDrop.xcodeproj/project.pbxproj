@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26071C701B1FB6410003E286 /* spark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 26071C6F1B1FB6410003E286 /* spark.sks */; };
+		26071C721B1FE3AF0003E286 /* EndScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26071C711B1FE3AF0003E286 /* EndScene.swift */; };
 		261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 261272E51B1ABADF00C132D4 /* Help-568h@2x.png */; };
 		261272E81B1ABADF00C132D4 /* Help-568h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 261272E61B1ABADF00C132D4 /* Help-568h@3x.png */; };
 		261272EC1B1BDF4A00C132D4 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 261272EB1B1BDF4A00C132D4 /* Settings.bundle */; };
 		261272EE1B1C3CB000C132D4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 261272ED1B1C3CB000C132D4 /* Images.xcassets */; };
 		263290571B10EBA2008EBB11 /* StartScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263290561B10EBA2008EBB11 /* StartScene.swift */; };
+		264301081B1EBDB7006C09E1 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 264301071B1EBDB7006C09E1 /* spark.png */; };
 		2648854E1AFAB27800C66482 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2648854D1AFAB27800C66482 /* DataManager.swift */; };
 		264885501AFAB2B500C66482 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2648854F1AFAB2B500C66482 /* SwiftyJSON.swift */; };
 		264885561B001CD600C66482 /* all.json in Resources */ = {isa = PBXBuildFile; fileRef = 264885551B001CD600C66482 /* all.json */; };
@@ -71,11 +74,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		26071C6F1B1FB6410003E286 /* spark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = spark.sks; sourceTree = "<group>"; };
+		26071C711B1FE3AF0003E286 /* EndScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndScene.swift; sourceTree = "<group>"; };
 		261272E51B1ABADF00C132D4 /* Help-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Help-568h@2x.png"; path = "TheWordDrop/Help-568h@2x.png"; sourceTree = "<group>"; };
 		261272E61B1ABADF00C132D4 /* Help-568h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Help-568h@3x.png"; path = "TheWordDrop/Help-568h@3x.png"; sourceTree = "<group>"; };
 		261272EB1B1BDF4A00C132D4 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		261272ED1B1C3CB000C132D4 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		263290561B10EBA2008EBB11 /* StartScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartScene.swift; sourceTree = "<group>"; };
+		264301071B1EBDB7006C09E1 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		2648854D1AFAB27800C66482 /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		2648854F1AFAB2B500C66482 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		264885551B001CD600C66482 /* all.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = all.json; sourceTree = "<group>"; };
@@ -203,11 +209,13 @@
 			isa = PBXGroup;
 			children = (
 				2661FED41AE3616A00FA4284 /* AppDelegate.swift */,
-				2648854D1AFAB27800C66482 /* DataManager.swift */,
-				2661FED81AE3616A00FA4284 /* GameScene.swift */,
-				2661FEDA1AE3616A00FA4284 /* GameViewController.swift */,
 				2661FF1C1AE55E5500FA4284 /* TheWordDrop.swift */,
+				2661FED81AE3616A00FA4284 /* GameScene.swift */,
+				26071C6F1B1FB6410003E286 /* spark.sks */,
+				2661FEDA1AE3616A00FA4284 /* GameViewController.swift */,
+				2648854D1AFAB27800C66482 /* DataManager.swift */,
 				263290561B10EBA2008EBB11 /* StartScene.swift */,
+				26071C711B1FE3AF0003E286 /* EndScene.swift */,
 				26B699071B030B3D00011C63 /* Global.swift */,
 				2661FF0A1AE55C6500FA4284 /* Block.swift */,
 				2661FF0C1AE55CD400FA4284 /* Shape.swift */,
@@ -228,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				2661FF6D1AECCF8200FA4284 /* words.txt */,
+				264301071B1EBDB7006C09E1 /* spark.png */,
 				26EA60E91B09720300C83B44 /* blackbg2.png */,
 				26EA60EA1B09720300C83B44 /* blackbg2@2x.png */,
 				2661FF281AE86BEB00FA4284 /* blackbg.png */,
@@ -347,6 +356,7 @@
 				26EA60E81B090A0A00C83B44 /* logo.png in Resources */,
 				2661FF251AE712EF00FA4284 /* gameover.mp3 in Resources */,
 				2661FF051AE47F8F00FA4284 /* gameboard@2x.png in Resources */,
+				26071C701B1FB6410003E286 /* spark.sks in Resources */,
 				2661FEE31AE3616B00FA4284 /* LaunchScreen.xib in Resources */,
 				2661FF231AE712EF00FA4284 /* bomb.mp3 in Resources */,
 				2661FF241AE712EF00FA4284 /* drop.mp3 in Resources */,
@@ -369,6 +379,7 @@
 				2661FEF91AE47F6700FA4284 /* Sounds in Resources */,
 				2661FEDE1AE3616B00FA4284 /* Main.storyboard in Resources */,
 				2661FF061AE47F8F00FA4284 /* whitebg.png in Resources */,
+				264301081B1EBDB7006C09E1 /* spark.png in Resources */,
 				2661FF071AE47F8F00FA4284 /* whitebg@2x.png in Resources */,
 				261272EE1B1C3CB000C132D4 /* Images.xcassets in Resources */,
 				261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */,
@@ -396,6 +407,7 @@
 				2661FF0F1AE55D6C00FA4284 /* ShapeSquare.swift in Sources */,
 				2661FED91AE3616A00FA4284 /* GameScene.swift in Sources */,
 				2661FF171AE55DE000FA4284 /* ShapeJ.swift in Sources */,
+				26071C721B1FE3AF0003E286 /* EndScene.swift in Sources */,
 				2661FF331AE8AF5B00FA4284 /* ShapeSingle.swift in Sources */,
 				2661FF1D1AE55E5500FA4284 /* TheWordDrop.swift in Sources */,
 				2661FF371AE9D50800FA4284 /* ShapeTriple.swift in Sources */,
@@ -544,7 +556,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = TheWordDrop;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -559,7 +571,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = TheWordDrop;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 let TickLengthLevelOne = NSTimeInterval(600)
 
@@ -16,6 +17,7 @@ class GameScene: SKScene {
     let pointsLayer = SKNode()
     let previewLayer = SKNode()
     var BlockSize:CGFloat = 32
+    var musicPlayer = AVAudioPlayer()
     
     let LayerPosition = CGPoint(x: 0, y: 0)
 
@@ -23,25 +25,29 @@ class GameScene: SKScene {
     var tickLengthMillis = TickLengthLevelOne
     var lastTick:NSDate?
     var gameOverView: SKView?
+    var startSceneView: SKView?
     var sounds = [String:SKAction]()
-
     var textureCache = Dictionary<String, SKTexture>()
 
     required init(coder aDecoder: NSCoder) {
         fatalError("NSCoder not supported")
     }
     
+    
     override init(size: CGSize) {
         super.init(size: size)
         self.BlockSize = self.size.height / 18
         //self.BlockSize = self.size.width / 10
         core.data.BlockSize = self.BlockSize
+        core.data.screenWidth = self.size.width
+        core.data.screenHeight = self.size.height
         
         anchorPoint = CGPoint(x: 0, y: 1.0)
         
         let background = SKSpriteNode(imageNamed: "background")
         background.position = CGPoint(x: 0, y: 0)
         background.anchorPoint = anchorPoint
+        background.zPosition = -10
         addChild(background)
         addChild(gameLayer)
         
@@ -50,7 +56,8 @@ class GameScene: SKScene {
         let gameBoard = SKSpriteNode(texture: gameBoardTexture, size: CGSizeMake(self.size.width, self.frame.height))
         gameBoard.anchorPoint = anchorPoint
         gameBoard.position = LayerPosition
-    
+        gameBoard.zPosition = 0
+        
         let previewWidth = self.frame.size.width * 0.20
         
         shapeLayer.position = CGPoint(x:0, y:0)
@@ -64,28 +71,42 @@ class GameScene: SKScene {
         previewLayer.position = LayerPosition
         println("previewWidth: \(previewWidth)")
         
-        var previewNode = makeInfoPanel(previewWidth)
+        var previewNode = makeInfoPanel(previewWidth)   // Not really passing width, it just happens to be the same size
         previewNode.position = CGPoint(x:self.size.width - (previewWidth / 2), y: -((previewWidth * 2) - (previewWidth / 2) + 3))
         
         //gameLayer.addChild(previewNode)
         previewLayer.addChild(previewNode)
         gameLayer.addChild(previewLayer)
         
-        core.data.settingsScene = StartScene(size: self.size)
-
+        gameLayer.zPosition = 0
         
-        runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
+        var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
+        
+        var error: NSError?
+        self.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
+        self.musicPlayer.volume = 0.5
+        self.musicPlayer.prepareToPlay()
+        self.musicPlayer.play()
+        
+        // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
 
         self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
+        
+    }
+
+    func newSpark() -> SKEmitterNode {
+        let sparkpath:NSString = NSBundle.mainBundle().pathForResource("spark", ofType: "sks")!
+        let newspark = NSKeyedUnarchiver.unarchiveObjectWithFile(sparkpath as String) as! SKEmitterNode
+        return newspark
     }
     
     func makeInfoPanel(previewWidth: CGFloat) -> SKSpriteNode {
-        let previewShape = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:5)
+        let previewShape = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:6)
         previewShape.position = CGPoint(x:0, y:-3)
         previewShape.fillColor = UIColor.whiteColor()
         previewShape.strokeColor = UIColor.clearColor()
         
-        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:5)
+        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:6)
         previewShape2.position = CGPoint(x:0, y:0)
         previewShape2.fillColor = UIColor.blackColor()
         previewShape2.strokeColor = UIColor.clearColor()
@@ -96,6 +117,7 @@ class GameScene: SKScene {
         previewNode.addChild(previewShape)
         previewNode.addChild(previewShape2)
 
+        previewNode.zPosition = 10
         return previewNode
     }
     
@@ -110,12 +132,15 @@ class GameScene: SKScene {
     }
 
     override func didMoveToView(view: SKView) {
-        self.gameOverView = SKView(
-            frame: CGRectMake(
-                self.frame.size.width/4, self.frame.size.height/4,
-                self.frame.size.width/2, self.frame.size.height/2))
+        println("didMoveToView called in GameScene")
         
+/*        self.startSceneView = SKView(frame: CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height))
+        let startScene = StartScene(size: CGSizeMake(self.frame.size.width, self.frame.size.height));
+        self.startSceneView!.presentScene(startScene)
+        startScene.thisDelegate = self
+*/
     }
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
         if lastTick == nil {
@@ -129,8 +154,6 @@ class GameScene: SKScene {
     }
 
     func playSound(sound:String) {
-        println("Playing sound '\(sound)'")
-        println("\(self.sounds[sound])")
         runAction(sounds[sound])
     }
     
@@ -147,20 +170,49 @@ class GameScene: SKScene {
         return CGPointMake(x, y)
     }
     
+    private func newExplosion() -> SKEmitterNode {
+        
+        let explosion = SKEmitterNode()
+        
+        let image = UIImage(named:"spark.png")!
+        explosion.particleTexture = SKTexture(image: image)
+        explosion.particleColor = UIColor.brownColor()
+        explosion.numParticlesToEmit = 100
+        explosion.particleBirthRate = 450
+        explosion.particleLifetime = 2
+        explosion.emissionAngleRange = 360
+        explosion.particleSpeed = 100
+        explosion.particleSpeedRange = 50
+        explosion.xAcceleration = 0
+        explosion.yAcceleration = 0
+        explosion.particleAlpha = 0.8
+        explosion.particleAlphaRange = 0.2
+        explosion.particleAlphaSpeed = -0.5
+        explosion.particleScale = 0.75
+        explosion.particleScaleRange = 0.4
+        explosion.particleScaleSpeed = -0.5
+        explosion.particleRotation = 0
+        explosion.particleRotationRange = 0
+        explosion.particleRotationSpeed = 0
+        explosion.particleColorBlendFactor = 1
+        explosion.particleColorBlendFactorRange = 0
+        explosion.particleColorBlendFactorSpeed = 0
+        explosion.particleBlendMode = SKBlendMode.Add
+        
+        return explosion
+    }
+    
     func addPreviewShapeToScene(shape:Shape, completion:() -> ()) {
         let blockRowColumnTranslations = shape.blockRowColumnPositions[shape.orientation]
         var destX = LayerPosition.x + (CGFloat(shape.column) * BlockSize) + (BlockSize / 2)
         var destY = LayerPosition.y + (CGFloat(shape.row - 1) * BlockSize) + (BlockSize / 2)
 
         for (idx, block) in enumerate(shape.blocks) {
-            var texture = textureCache[block.spriteName]
-            if texture == nil {
-                texture = SKTexture(imageNamed: block.spriteName)
-                textureCache[block.spriteName] = texture
-            }
             var CGBlockSize = CGSize(width: BlockSize, height: BlockSize)
             let sprite = SKShapeNode(rectOfSize: CGBlockSize, cornerRadius: 4.0)
-            sprite.fillColor = UIColor.lightGrayColor()
+            
+            sprite.fillColor = block.spriteColor
+            
             sprite.strokeColor = UIColor.darkGrayColor()
             sprite.position = pointForColumn(block.column, row:block.row - 1)
             
@@ -187,24 +239,14 @@ class GameScene: SKScene {
             myvalue.fontColor = SKColor.blackColor()
             
             sprite.addChild(myvalue)
-            sprite.zPosition = 50
+            sprite.zPosition = 20
             
             shapeLayer.addChild(sprite)
-            //previewLayer.addChild(sprite)
             block.sprite = sprite
             
-            /*
-            var previewBlock = sprite
-            var xlate = shape.blockRowColumnPositions[shape.orientation]
-            
-            previewBlock.position = CGPoint(x: (8 - block.column) * 32, y: (4 - block.row) * 32)
-            previewLayer.addChild(previewBlock)
-            */
             // Animation
             sprite.alpha = 0
-            // #6
             
-            println("blockRowColumnPositions: (\(idx)) - \(blockRowColumnTranslations?[idx])")
             var newX = destX
             var newY = destY
             
@@ -216,9 +258,6 @@ class GameScene: SKScene {
                 newY = CGFloat(newY) + (CGFloat(rowDiff) * CGFloat(BlockSize / 2)) - 10
             }
             
-            println("block[\(idx)] - destX: \(destX)  newX: \(newX)")
-            println("block[\(idx)] - destY: \(destY)  newY: \(newY)")
-//            let moveAction = SKAction.moveTo(pointForColumn(block.column, row: block.row - 1), duration: NSTimeInterval(0.4))
             let moveAction = SKAction.moveTo(CGPointMake(newX, -newY), duration: NSTimeInterval(0.5))
             moveAction.timingMode = .EaseOut
     
@@ -376,6 +415,22 @@ class GameScene: SKScene {
                 let archAction = SKAction.followPath(archPath.CGPath, asOffset: false, orientToPath: true, duration: randomDuration)
                 archAction.timingMode = .EaseIn
                 let sprite = block.sprite!
+                sprite.zPosition = 10
+                
+                var xplode = newSpark()
+                xplode.position = pointForColumn(block.column, row: block.row)
+                xplode.name = "spark"
+                xplode.targetNode = self.scene
+                xplode.zPosition = 100
+                
+                self.addChild(xplode)
+                xplode.runAction(
+                    SKAction.sequence(  [
+                            SKAction.fadeOutWithDuration(NSTimeInterval(0.5)),
+                            SKAction.removeFromParent()
+                        ]
+                    )
+                )
                 // #6
                 sprite.zPosition = 100
                 sprite.runAction(

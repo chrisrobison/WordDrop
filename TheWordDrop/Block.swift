@@ -1,4 +1,4 @@
-import UIKit
+
 import SpriteKit
 
 let NumberOfColors: UInt32 = 7

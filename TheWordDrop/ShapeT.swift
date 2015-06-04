@@ -4,27 +4,24 @@ class TShape:Shape {
     
         | 0 |
     | 1 |•2 | 3 |
-        | 4 |
     
     Orientation 90
     
-    • | 1 |
-    | 2 | 0 |
-    | 3 |
+        | 1 |
+        | 2 | 0 |
+        | 3 |
     
     Orientation 180
     
-    •
     | 1 | 2 | 3 |
-    | 0 |
+        | 0 |
     
     Orientation 270
     
-    • | 1 |
+        | 1 |
     | 0 | 2 |
-    | 3 |
+        | 3 |
     
-    • marks the row/column indicator for the shape
     
     */
     

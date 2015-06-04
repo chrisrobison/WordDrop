@@ -49,7 +49,7 @@
         lastWord:String,
         lastPoint:Int,
         lastWords:Array<String> = [],
-        myUtterance = AVSpeechUtterance(string: "")
+        myUtterance:AVSpeechUtterance?
     
     init() {
         score = 0
@@ -146,7 +146,7 @@
     *
     */
     final func calculatePoints(tiles:Array<Block>) -> Int {
-        var points = 0, val = 0, bonus:Int = 0, word = "", out = ""
+        var points = 0, val = 0, bonus:Int = 0, word = "", out = "", wordBonuses = [Int]()
         
         for tile in tiles {
             var val = LetterValues[tile.letter]!
@@ -159,10 +159,13 @@
             case .Purple:       // 4L
                 val = val * 4
             case .Red:          // 2W
+                wordBonuses.append(2)
                 bonus += 2
             case .Teal:         // 3W
+                wordBonuses.append(3)
                 bonus += 3
             case .Yellow:       // 4W
+                wordBonuses.append(4)
                 bonus += 4
             case .Grey:         // No bonus
                 val = val + 0
@@ -190,7 +193,8 @@
             fallenBlocks = Array<Array<Block>>(),
             queuedBlocks:[(String,Int,Array<Block>)] = [],
             foundWords:[String],
-            tempGrid = Array<String>()
+        colsOfBlocks = Array<Array<Block?>>(count:NumRows, repeatedValue: Array<Block?>()),
+            colStrings = Array<String>(count: NumColumns, repeatedValue:"")
 
         for var row = NumRows - 1; row > 0; row-- {
             var rowOfBlocks = Array<Block?>(),
@@ -201,15 +205,18 @@
             for column in 0..<NumColumns {
                 if let block = blockArray[column, row] {
                     rowOfBlocks.append(block)
+                    colsOfBlocks[column].insert(block, atIndex:0)
+                    colStrings[column] = block.letter + colStrings[column]
                     rowString += block.letter
                     haveTiles = true
                 } else {
                     rowOfBlocks.append(nil)
                     rowString += " "
+                    colsOfBlocks[column].insert(nil, atIndex:0)
+                    colStrings[column] = " " + colStrings[column]
                 }
             }
             
-            tempGrid.append(rowString)
             // Check for words, calculate points when found
             if (haveTiles) {
                 (foundWords, tiles) = dataManager.findWords(rowString, blocks: rowOfBlocks)
@@ -223,19 +230,17 @@
                     
                     queuedBlocks.append(tup)
                     
-                    myUtterance = AVSpeechUtterance(string: foundWords[0])
-                    myUtterance.rate = 0.2
-                    synth.speakUtterance(myUtterance)
+                    sayWord(foundWords[0])
                 }
             }
         }
 
         // Now check for vertical words
         for column in 0..<NumColumns {
-            var colOfBlocks = Array<Block?>(),
-                colString = "",
-                haveTiles = false
+            var colOfBlocks = colsOfBlocks[column],
+                colString = colStrings[column]
             
+            /*
             // Get blocks for column
             for row in 0..<NumRows {
                 if let block = blockArray[column, row] {
@@ -247,27 +252,23 @@
                     colString += " "
                 }
             }
+            */
             
-            if (haveTiles) {
-                (foundWords, tiles) = dataManager.findWords(colString, blocks: colOfBlocks)
+            (foundWords, tiles) = dataManager.findWords(colString, blocks: colOfBlocks)
+            
+            if foundWords.count > 0 {
+                removedTiles.append(tiles)
+                lastPoint = calculatePoints(tiles)
+                score += lastPoint
+                    
+                let tup = (foundWords[0], lastPoint, tiles)
                 
-                if foundWords.count > 0 {
-                    removedTiles.append(tiles)
-                    lastPoint = calculatePoints(tiles)
-                    score += lastPoint
-                    
-                    let tup = (foundWords[0], lastPoint, tiles)
-                    
-                    queuedBlocks.append(tup)
-                    
-                    myUtterance = AVSpeechUtterance(string: foundWords[0])
-                    myUtterance.rate = 0.3
-                    synth.speakUtterance(myUtterance)
-                }
+                queuedBlocks.append(tup)
+                
+                sayWord(foundWords[0])
             }
         }
 
-        // #3
         if removedTiles.count == 0 {
             return ([], [])
         }
@@ -316,11 +317,8 @@
                 // Check if we have a block with no block below it
                 if blockArray[column, row] != nil && blockArray[column, row + 1] == nil {
                     // check for anchors in next row
-                    if (column==0 || blockArray[column-1,row+1]==nil) && (column==NumColumns-1 || blockArray[column+1,row+1]==nil) {
-                        floating = true
-                    }
-                    // check anchoring blocks to the left and right
-                    if (column==0 || blockArray[column-1,row]==nil) && (column==NumColumns-1 || blockArray[column+1,row]==nil) {
+                    if (
+                            (column==0 || blockArray[column-1,row+1]==nil) && (column==NumColumns-1 || blockArray[column+1,row+1]==nil)) || ((column==0 || blockArray[column-1,row]==nil) && (column==NumColumns-1 || blockArray[column+1,row]==nil)) {
                         floating = true
                     }
                 }
@@ -350,6 +348,12 @@
     
     func clearFloatingBlocks() {
         
+    }
+    
+    func sayWord(word:String) {
+        myUtterance = AVSpeechUtterance(string: word)
+        myUtterance!.rate = 0.3
+        synth.speakUtterance(myUtterance)
     }
     
     func dropShape() {

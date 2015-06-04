@@ -15,7 +15,7 @@ let LetterValues: Dictionary<String, Int> = [
     "K": 5, "L": 1, "M": 3, "N": 1, "O": 1,
     "P": 3, "Q": 10, "R": 1, "S": 1, "T": 1,
     "U": 1, "V": 4, "W": 4, "X": 8, "Y": 4,
-    "Z": 10 ]
+    "Z": 10, "💣": 10 ]
 
 class DataManager {
     let shortestWord:Int = 3
@@ -26,6 +26,8 @@ class DataManager {
         settingsScene:SKScene?,
         BlockSize:CGFloat = 32.0,
         screenSize = 0.0,
+        screenWidth:CGFloat = 0,
+        screenHeight:CGFloat = 0,
         wordCache = [String: Int]()
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
@@ -164,7 +166,7 @@ class DataManager {
     }
     
     func initLetters(setCount:Int) {
-        let letters = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
+        let letters = "💣💣AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ"
         var myletters = letters * setCount
         self.letterQueue.removeAll(keepCapacity: true)
         self.letterQueue = map(letters) { s -> String in String(s) }
