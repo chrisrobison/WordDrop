@@ -194,7 +194,8 @@
             queuedBlocks:[(String,Int,Array<Block>)] = [],
             foundWords:[String],
         colsOfBlocks = Array<Array<Block?>>(count:NumRows, repeatedValue: Array<Block?>()),
-            colStrings = Array<String>(count: NumColumns, repeatedValue:"")
+            colStrings = Array<String>(count: NumColumns, repeatedValue:""),
+            bombs = [Block?]()
 
         for var row = NumRows - 1; row > 0; row-- {
             var rowOfBlocks = Array<Block?>(),
@@ -209,6 +210,9 @@
                     colStrings[column] = block.letter + colStrings[column]
                     rowString += block.letter
                     haveTiles = true
+                    if (block.letter == "💣") {
+                        bombs.append(block)
+                    }
                 } else {
                     rowOfBlocks.append(nil)
                     rowString += " "
@@ -240,20 +244,6 @@
             var colOfBlocks = colsOfBlocks[column],
                 colString = colStrings[column]
             
-            /*
-            // Get blocks for column
-            for row in 0..<NumRows {
-                if let block = blockArray[column, row] {
-                    colOfBlocks.append(block)
-                    colString += block.letter
-                    haveTiles = true
-                } else {
-                    colOfBlocks.append(nil)
-                    colString += " "
-                }
-            }
-            */
-            
             (foundWords, tiles) = dataManager.findWords(colString, blocks: colOfBlocks)
             
             if foundWords.count > 0 {
@@ -268,6 +258,10 @@
                 sayWord(foundWords[0])
             }
         }
+        if (bombs.count > 0) {
+            var tmpblocks = explodeBomb(bombs)
+            removedTiles.append(tmpblocks)
+        }
 
         if removedTiles.count == 0 {
             return ([], [])
@@ -279,15 +273,14 @@
         }
         
         core.data.queuedBlocks += queuedBlocks
+        var fallenBlocksArray = Array<Block>()
         
         for tileQueue in removedTiles {
             for tile in tileQueue {
                 blockArray[tile.column, tile.row] = nil
             }
-        
-        
+            
             for tile in tileQueue {
-                var fallenBlocksArray:Array<Block> = []
             
                 for var row = tile.row - 1; row > 0; row-- {
                     if let block = blockArray[tile.column, row] {
@@ -305,7 +298,19 @@
             }
         }
         
-        // removedTiles.append(tiles)
+        fallenBlocksArray.removeAll()
+        fallenBlocksArray = clearFloatingBlocks()
+        if fallenBlocksArray.count > 0 {
+            fallenBlocks.append(fallenBlocksArray)
+        }
+
+        core.data.queuedBlocks = queuedBlocks
+        
+        fallingShape = nil
+        return (removedTiles, fallenBlocks)
+    }
+    
+    func clearFloatingBlocks() -> Array<Block> {
         var cols = [String]()
         var fallenBlocksArray = Array<Block>()
         var floating = false
@@ -317,10 +322,7 @@
                 // Check if we have a block with no block below it
                 if blockArray[column, row] != nil && blockArray[column, row + 1] == nil {
                     // check for anchors in next row
-                    if (
-                            (column==0 || blockArray[column-1,row+1]==nil) && (column==NumColumns-1 || blockArray[column+1,row+1]==nil)) || ((column==0 || blockArray[column-1,row]==nil) && (column==NumColumns-1 || blockArray[column+1,row]==nil)) {
-                        floating = true
-                    }
+                    floating = ((column==0 || blockArray[column-1,row+1]==nil) && (column==NumColumns-1 || blockArray[column+1,row+1]==nil)) || ((column==0 || blockArray[column-1,row]==nil) && (column==NumColumns-1 || blockArray[column+1,row]==nil)) ? true : false
                 }
                 
                 if floating == true {
@@ -334,22 +336,59 @@
                         blockArray[column, newRow] = block
                         fallenBlocksArray.append(block)
                     }
-                    if fallenBlocksArray.count > 0 {
-                        fallenBlocks.append(fallenBlocksArray)
-                    }
                 }
             }
         }
-        core.data.queuedBlocks = queuedBlocks
-        
-        fallingShape = nil
-        return (removedTiles, fallenBlocks)
+        return fallenBlocksArray
     }
     
-    func clearFloatingBlocks() {
-        
+    func explodeBomb(bombs:Array<Block?>) -> Array<Block> {
+        var tmpblocks = Array<Block>()
+        for bomb in bombs {
+            tmpblocks.append(bomb!)
+            if bomb!.column > 1 {
+                if blockArray[bomb!.column - 1, bomb!.row] != nil {
+                    tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row]!)
+                }
+                
+                if (bomb!.row < NumRows - 1) {
+                    if blockArray[bomb!.column - 1, bomb!.row + 1] != nil {
+                        tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row + 1]!)
+                    }
+                }
+                
+                if (bomb!.row > 1) {
+                    if blockArray[bomb!.column - 1, bomb!.row - 1] != nil {
+                        tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row - 1]!)
+                    }
+                }
+            }
+            
+            if bomb!.column < NumColumns - 1 {
+                if blockArray[bomb!.column + 1, bomb!.row] != nil {
+                    tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row]!)
+                }
+                
+                if bomb!.row > 1 {
+                    if blockArray[bomb!.column + 1, bomb!.row - 1] != nil {
+                        tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row - 1]!)
+                    }
+                }
+                
+                if bomb!.row < NumRows - 1 {
+                    if blockArray[bomb!.column + 1, bomb!.row + 1] != nil {
+                        tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row + 1]!)
+                    }
+                }
+            }
+            if (bomb!.row < NumRows - 1) {
+                if blockArray[bomb!.column, bomb!.row + 1] != nil {
+                    tmpblocks.append(blockArray[bomb!.column, bomb!.row + 1]!)
+                }
+            }
+        }
+        return tmpblocks
     }
-    
     func sayWord(word:String) {
         myUtterance = AVSpeechUtterance(string: word)
         myUtterance!.rate = 0.3

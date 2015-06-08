@@ -16,6 +16,9 @@ class GameScene: SKScene {
     let shapeLayer = SKNode()
     let pointsLayer = SKNode()
     let previewLayer = SKNode()
+    let wordLayer = SKNode()
+    let scoreLayer = SKNode()
+    let infoLayer = SKNode()
     var BlockSize:CGFloat = 32
     var musicPlayer = AVAudioPlayer()
     
@@ -71,15 +74,27 @@ class GameScene: SKScene {
         previewLayer.position = LayerPosition
         println("previewWidth: \(previewWidth)")
         
-        var previewNode = makeInfoPanel(previewWidth)   // Not really passing width, it just happens to be the same size
+        var previewNode = makeInfoPanel(previewWidth)   // Passing height, not width, it just happens to be the same size
         previewNode.position = CGPoint(x:self.size.width - (previewWidth / 2), y: -((previewWidth * 2) - (previewWidth / 2) + 3))
         
-        //gameLayer.addChild(previewNode)
         previewLayer.addChild(previewNode)
         gameLayer.addChild(previewLayer)
         
         gameLayer.zPosition = 0
         
+/*
+        var testNode = SKSpriteNode(color: UIColor.redColor(), size: CGSizeMake(100,100))
+        testNode.position = CGPoint(x:self.size.width - previewWidth / 2, y: -self.size.height / 2)
+        testNode.zPosition = 1000
+        gameLayer.addChild(testNode)
+*/
+        // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
+
+        self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
+        
+    }
+
+    func playBackgroundMusic() {
         var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
         
         var error: NSError?
@@ -87,31 +102,72 @@ class GameScene: SKScene {
         self.musicPlayer.volume = 0.5
         self.musicPlayer.prepareToPlay()
         self.musicPlayer.play()
-        
-        // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
-
-        self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
-        
     }
-
+    
+    func setupInfoPanel(theView: UIView) -> SKSpriteNode {
+        var myNode:SKSpriteNode = makeInfoPanel(theView.frame.height)
+        var myPosition = convertPointFromView(theView.frame.origin)
+        myNode.anchorPoint = CGPoint(x:0, y:1)
+        println("view.position: \(myPosition)")
+        println("screenHeight: \(core.data.screenHeight)")
+        println("view.frame.origin: \(theView.frame.origin)")
+        println("view.frame: \(theView.frame)")
+        println("view.frame.height: \(theView.frame.height)")
+        println("view.parent.frame.height: \(theView.frame.height)")
+        
+        var w = core.data.screenWidth * 0.20
+        var x = core.data.screenWidth - (w / 2)
+        var y = core.data.screenHeight + myPosition.y
+        
+        myNode.position = CGPointMake(x, y)
+        myNode.size = CGSizeMake(w, theView.frame.height)
+        
+        println("node - x: \(x) y: \(y)")
+        println("node.frame.height: \(myNode.frame.height)")
+        println("node.frame: \(myNode.frame)")
+        return myNode
+    }
+    
+    override func didMoveToView(view: SKView) {
+        println("didMoveToView in GameScene")
+        var myWidth = core.data.screenWidth * 0.2
+        println("myWidth: \(myWidth)")
+        
+        var myNode:SKSpriteNode
+        if let scorePanel = core.data.viewCache["score"] {
+            println("Se†ting up 'score' info panel")
+            myNode = setupInfoPanel(scorePanel)
+            infoLayer.addChild(myNode)
+        }
+        
+        if let wordsPanel = core.data.viewCache["words"] {
+            println("Se†ting up 'words' info panel")
+            myNode = setupInfoPanel(wordsPanel)
+            infoLayer.addChild(myNode)
+        }
+        infoLayer.position = CGPoint(x:0, y:0)
+        gameLayer.addChild(infoLayer)
+    }
+    
     func newSpark() -> SKEmitterNode {
-        let sparkpath:NSString = NSBundle.mainBundle().pathForResource("spark", ofType: "sks")!
+        let sparkpath:NSString = NSBundle.mainBundle().pathForResource("MyParticle", ofType: "sks")!
         let newspark = NSKeyedUnarchiver.unarchiveObjectWithFile(sparkpath as String) as! SKEmitterNode
         return newspark
     }
     
-    func makeInfoPanel(previewWidth: CGFloat) -> SKSpriteNode {
-        let previewShape = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:6)
+    func makeInfoPanel(panelHeight: CGFloat) -> SKSpriteNode {
+        let width = self.frame.size.width * 0.20
+        let previewShape = SKShapeNode(rectOfSize: CGSize(width: width - 8, height:panelHeight), cornerRadius:6)
         previewShape.position = CGPoint(x:0, y:-3)
         previewShape.fillColor = UIColor.whiteColor()
         previewShape.strokeColor = UIColor.clearColor()
         
-        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width:previewWidth - 8, height:previewWidth), cornerRadius:6)
+        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width: width - 8, height:panelHeight), cornerRadius:6)
         previewShape2.position = CGPoint(x:0, y:0)
         previewShape2.fillColor = UIColor.blackColor()
         previewShape2.strokeColor = UIColor.clearColor()
         
-        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:previewWidth - 8, height:previewWidth + 3))
+        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:width - 8, height:panelHeight + 3))
         previewNode.anchorPoint = CGPoint(x:0, y:1.0)
         
         previewNode.addChild(previewShape)
@@ -129,16 +185,6 @@ class GameScene: SKScene {
         }
         
         return cache
-    }
-
-    override func didMoveToView(view: SKView) {
-        println("didMoveToView called in GameScene")
-        
-/*        self.startSceneView = SKView(frame: CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height))
-        let startScene = StartScene(size: CGSizeMake(self.frame.size.width, self.frame.size.height));
-        self.startSceneView!.presentScene(startScene)
-        startScene.thisDelegate = self
-*/
     }
     
     override func update(currentTime: CFTimeInterval) {
@@ -168,38 +214,6 @@ class GameScene: SKScene {
         let x: CGFloat = LayerPosition.x + (CGFloat(column) * BlockSize) + (BlockSize / 2)
         let y: CGFloat = LayerPosition.y - ((CGFloat(row) * BlockSize) + (BlockSize / 2))
         return CGPointMake(x, y)
-    }
-    
-    private func newExplosion() -> SKEmitterNode {
-        
-        let explosion = SKEmitterNode()
-        
-        let image = UIImage(named:"spark.png")!
-        explosion.particleTexture = SKTexture(image: image)
-        explosion.particleColor = UIColor.brownColor()
-        explosion.numParticlesToEmit = 100
-        explosion.particleBirthRate = 450
-        explosion.particleLifetime = 2
-        explosion.emissionAngleRange = 360
-        explosion.particleSpeed = 100
-        explosion.particleSpeedRange = 50
-        explosion.xAcceleration = 0
-        explosion.yAcceleration = 0
-        explosion.particleAlpha = 0.8
-        explosion.particleAlphaRange = 0.2
-        explosion.particleAlphaSpeed = -0.5
-        explosion.particleScale = 0.75
-        explosion.particleScaleRange = 0.4
-        explosion.particleScaleSpeed = -0.5
-        explosion.particleRotation = 0
-        explosion.particleRotationRange = 0
-        explosion.particleRotationSpeed = 0
-        explosion.particleColorBlendFactor = 1
-        explosion.particleColorBlendFactorRange = 0
-        explosion.particleColorBlendFactorSpeed = 0
-        explosion.particleBlendMode = SKBlendMode.Add
-        
-        return explosion
     }
     
     func addPreviewShapeToScene(shape:Shape, completion:() -> ()) {
@@ -297,8 +311,8 @@ class GameScene: SKScene {
     }
     
     func animateLevelUp(level:Int) {
-        let sprite = SKSpriteNode()
-        sprite.position = pointForColumn(4, row:7)
+        let banner = SKSpriteNode()
+        banner.position = pointForColumn(4, row:7)
         
         var myword = SKLabelNode(fontNamed: "AvenirNext-Bold");
         myword.text = "LEVEL \(level)"
@@ -306,10 +320,10 @@ class GameScene: SKScene {
         myword.position = CGPoint(x:0, y:0)
         myword.fontColor = SKColor.whiteColor()
         
-        sprite.addChild(myword)
-        sprite.zPosition = 100
+        banner.addChild(myword)
+        banner.zPosition = 1000
         
-        shapeLayer.addChild(sprite)
+        shapeLayer.addChild(banner)
 
         var actions = Array<SKAction>();
         var delay = NSTimeInterval(3)
@@ -319,7 +333,7 @@ class GameScene: SKScene {
         actions.append(SKAction.scaleTo(6.0, duration: NSTimeInterval(3)))
         
         let group = SKAction.group(actions);
-        sprite.runAction(SKAction.sequence([SKAction.scaleTo(2.0, duration: NSTimeInterval(1)), SKAction.waitForDuration(delay), group]))
+        banner.runAction(SKAction.sequence([SKAction.scaleTo(2.0, duration: NSTimeInterval(1)), SKAction.waitForDuration(delay), group]))
     }
     
     func animateFoundWords(queuedBlocks:[(String,Int,Array<Block>)]) {
@@ -379,8 +393,8 @@ class GameScene: SKScene {
                 let newPosition = pointForColumn(block.column, row: block.row)
                 let sprite = block.sprite!
                 
-                let delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.05)
-                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.05)
+                let delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.1)
+                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.1)
                 let moveAction = SKAction.moveTo(newPosition, duration: duration)
                 
                 //println("Dropping block - delay:\(delay) duration:\(duration)")
@@ -419,20 +433,21 @@ class GameScene: SKScene {
                 
                 var xplode = newSpark()
                 xplode.position = pointForColumn(block.column, row: block.row)
-                xplode.name = "spark"
-                xplode.targetNode = self.scene
+                xplode.name = "MyParticle"
                 xplode.zPosition = 100
                 
-                self.addChild(xplode)
+                sprite.parent!.addChild(xplode)
+                
                 xplode.runAction(
                     SKAction.sequence(  [
+                            SKAction.waitForDuration(NSTimeInterval(1.5)),
                             SKAction.fadeOutWithDuration(NSTimeInterval(0.5)),
                             SKAction.removeFromParent()
                         ]
                     )
                 )
                 // #6
-                sprite.zPosition = 100
+                sprite.zPosition = 25
                 sprite.runAction(
                     SKAction.sequence(
                         [SKAction.group([archAction, SKAction.fadeOutWithDuration(NSTimeInterval(randomDuration))]),

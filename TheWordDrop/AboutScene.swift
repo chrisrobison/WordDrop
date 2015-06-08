@@ -1,24 +1,25 @@
 //
-//  StartScene.swift
+//  AboutScene.swift
 //  TheWordDrop
 //
-//  Created by Christopher Robison on 5/22/15.
+//  Created by Christopher Robison on 6/4/15.
 //  Copyright (c) 2015 Christopher Robison. All rights reserved.
 //
 
 import UIKit
 import SpriteKit
 
-protocol StartSceneDelegate {
-    func startSceneDidFinish(myScene: StartScene, command:String)
+protocol AboutSceneDelegate {
+    func aboutSceneDidFinish(myScene: AboutScene, command:String)
 }
 
-class StartScene: SKScene {
-    var thisDelegate: StartSceneDelegate?
+class AboutScene: SKScene {
+    var thisDelegate: AboutSceneDelegate?
     
     override init(size: CGSize) {
         super.init(size: size)
         
+        //1
         self.backgroundColor = SKColor(hue: 0.0, saturation: 0.0, brightness: 0.24, alpha: 1.0)
         
         var logo = SKSpriteNode(imageNamed: "AltLogo")
@@ -72,31 +73,12 @@ class StartScene: SKScene {
         
         return shadowView
     }
-
+    
     
     func buttonAction(sender:UIButton) {
-        var action = sender.currentTitle!
-        
-        switch action {
-            case "Play Again":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-            case "New Game":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-            case "Help":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "help")
-            
-            case "About":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "about")
-
-            default:
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-        }
         if sender.currentTitle=="Play Again" || sender.currentTitle == "New Game" {
-            // close StartScene and start the game again
-            self.thisDelegate!.startSceneDidFinish(self, command: "restart")
+            // close AboutScene and start the game again
+            self.thisDelegate!.aboutSceneDidFinish(self, command: "restart")
         }
     }
     

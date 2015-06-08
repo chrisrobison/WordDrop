@@ -15,11 +15,11 @@ var on6plus : Bool {
 }
 
 class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecognizerDelegate, StartSceneDelegate {
-    var scene: GameScene!
-    var theworddrop:TheWordDrop!
-    var panPointReference:CGPoint?
-    var startView: SKView?
-    var startScene: StartScene?
+    var scene: GameScene!, theworddrop:TheWordDrop!, panPointReference:CGPoint?,
+        startView: SKView?, startScene: StartScene!, gameScene: GameScene!
+    
+    let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 1.0)
+    var skView:SKView!
     
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var scoreTitle: UILabel!
@@ -29,51 +29,78 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     @IBOutlet weak var tilesTitle: UILabel!
     @IBOutlet weak var lastWord: UILabel!
     @IBOutlet weak var infoPanel: UIView!
+    @IBOutlet weak var wordPanel: UIView!
+    @IBOutlet weak var scorePanel: UIView!
     @IBAction func settingsAction(sender: UIButton) {
-    
-        let skView = view as! SKView
-        skView.multipleTouchEnabled = false
-        
-        self.scene.view?.addSubview(self.startView!)
-
-        // var transition:SKTransition = SKTransition.pushWithDirection(.Left, duration: 1)
-        
-        // core.data.settingsScene?.scaleMode = .AspectFill
-        // skView.presentScene(core.data.settingsScene)
-    
+            showStart()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Configure the view.
-        let skView = view as! SKView
+        skView = view as! SKView
         skView.multipleTouchEnabled = false
         
-        // Create and configure the scene.
-        scene = GameScene(size: skView.bounds.size)
-        scene.scaleMode = .AspectFill
-        scene.tick = didTick
+        core.data.viewCache["words"] = wordPanel
+        core.data.viewCache["score"] = scorePanel
         
+        core.data.settingsScene = startScene
+        
+        gameScene = GameScene(size: skView.bounds.size)
+        gameScene.scaleMode = .AspectFill
+        scene = gameScene
+        adjustFontsForScreenSize()
+        
+        skView.presentScene(gameScene, transition: transition)
+
+        startView = SKView(frame: skView.bounds)
+        startScene = StartScene(size: skView.bounds.size)
+        startScene!.thisDelegate = self
+        startView?.presentScene(startScene)
+        
+        // Present the scene.
+        skView.addSubview(startView!)
+        
+        
+    }
+
+    func startGame() {
+        startView?.removeFromSuperview()
+        gameScene = GameScene(size: skView.bounds.size)
+        gameScene.scaleMode = .AspectFill
+
+        gameScene.tick = didTick
+
         theworddrop = TheWordDrop()
         theworddrop.delegate = self
         theworddrop.beginGame()
         
-        adjustFontsForScreenSize()
-        
         // Present the scene.
-        skView.presentScene(scene)
-        
-        self.startView = SKView( frame: CGRectMake(0, 0, scene.frame.size.width, scene.frame.size.height) )
-        
-        self.startScene = StartScene(size: CGSizeMake(scene.frame.size.width, scene.frame.size.height))
-        self.startScene!.thisDelegate = self
-        self.startView!.presentScene(startScene)
-
-        core.data.settingsScene = startScene
-        
+        skView.presentScene(gameScene)
     }
     
+    func showStart() {
+        let startScene = StartScene(size: self.view.frame.size)
+        startScene.scaleMode = SKSceneScaleMode.AspectFill
+        
+        skView.presentScene(startScene, transition:transition)
+    }
+
+    func showHelp() {
+        let helpScene = HelpScene(size: self.view.frame.size)
+        helpScene.scaleMode = SKSceneScaleMode.AspectFill
+        
+        skView.presentScene(helpScene, transition:transition)
+    }
+
+    func showAbout() {
+        let aboutScene = AboutScene(size: self.view.frame.size)
+        aboutScene.scaleMode = SKSceneScaleMode.AspectFill
+        
+        skView.presentScene(aboutScene, transition:transition)
+    }
+
     func adjustFontsForScreenSize() {
         var fontAdjustment = 0
         
@@ -85,15 +112,15 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
             core.data.screenSize = 568
             // IPhone 5
             fontAdjustment = -2
-        } else if UIScreen.mainScreen().bounds.size.width == 375 {  // *Perfect*
+        } else if UIScreen.mainScreen().bounds.size.width == 375 {
             core.data.screenSize = 375
             // iPhone 6
             fontAdjustment = 0
-        } else if UIScreen.mainScreen().bounds.size.width == 414 {  // *Perfect*
+        } else if UIScreen.mainScreen().bounds.size.width == 414 {
             core.data.screenSize = 414
             // iPhone 6+
             fontAdjustment = 3
-        } else if UIScreen.mainScreen().bounds.size.width == 768 {  // *Perfect*
+        } else if UIScreen.mainScreen().bounds.size.width == 768 {
             core.data.screenSize = 768
             // iPad
             fontAdjustment = 0
@@ -109,16 +136,39 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         println("didMoveToView called in GameViewController")
     }
 
+    func handleNavCommands(command: String) {
+        switch command {
+            case "start":
+                return startGame()
+            case "help":
+                return showHelp()
+            case "about":
+                return showAbout()
+            default:
+                return startGame()
+        }
+       
+    }
+    
     func startSceneDidFinish(myScene: StartScene, command: String) {
         println("GameViewController.startSceneDidFinish called")
         myScene.view!.removeFromSuperview()
-        // skView.presentScene(scene)
-        if command == "restart" {
-            scene.tick = didTick
-            theworddrop.beginGame()
-        }
+
+        handleNavCommands(command)
     }
     
+    func helpSceneDidFinish(myScene: HelpScene, command: String) {
+        println("GameViewController.helpSceneDidFinish called")
+        myScene.view!.removeFromSuperview()
+        handleNavCommands(command)
+    }
+    
+    func aboutSceneDidFinish(myScene: AboutScene, command: String) {
+        println("GameViewController.aboutSceneDidFinish called")
+        myScene.view!.removeFromSuperview()
+        handleNavCommands(command)
+    }
+
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -176,11 +226,11 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         let newShapes = theworddrop.newShape()
         tilesLabel.text = "\(core.data.letterQueue.count)"
         if let fallingShape = newShapes.fallingShape {
-            self.scene.addPreviewShapeToScene(newShapes.nextShape!) {}
-            self.scene.movePreviewShape(fallingShape) {
+            self.gameScene.addPreviewShapeToScene(newShapes.nextShape!) {}
+            self.gameScene.movePreviewShape(fallingShape) {
                 // #2
                 self.view.userInteractionEnabled = true
-                self.scene.startTicking()
+                self.gameScene.startTicking()
             }
         }
     }
@@ -196,13 +246,13 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         tilesLabel.text = "\(core.data.letterQueue.count)"
         lastWord.text = ""
         
-        scene.animateLevelUp(Int(theworddrop.level))
+        gameScene.animateLevelUp(Int(theworddrop.level))
         
-        scene.tickLengthMillis = TickLengthLevelOne
+        gameScene.tickLengthMillis = TickLengthLevelOne
 
         // The following is false when restarting a new game
         if theworddrop.nextShape != nil && theworddrop.nextShape!.blocks[0].sprite == nil {
-            scene.addPreviewShapeToScene(theworddrop.nextShape!) {
+            gameScene.addPreviewShapeToScene(theworddrop.nextShape!) {
                 self.nextShape()
             }
         } else {
@@ -212,12 +262,12 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     
     func gameDidEnd(theworddrop: TheWordDrop) {
         view.userInteractionEnabled = false
-        scene.stopTicking()
-        scene.playSound("gameover.mp3")
-        scene.animateCollapsingLines(theworddrop.removeAllBlocks(), fallenBlocks: Array<Array<Block>>()) {
+        gameScene.stopTicking()
+        gameScene.playSound("gameover.mp3")
+        gameScene.animateCollapsingLines(theworddrop.removeAllBlocks(), fallenBlocks: Array<Array<Block>>()) {
             //theworddrop.beginGame()
             self.view.userInteractionEnabled = true
-            self.scene.view?.addSubview(self.startView!)
+            self.gameScene.view?.addSubview(self.startView!)
         }
     }
     
@@ -225,31 +275,31 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         theworddrop.level = UInt32(core.data.level)
         levelLabel.text = "\(theworddrop.level)"
         
-        scene.animateLevelUp(Int(theworddrop.level))
+        gameScene.animateLevelUp(Int(theworddrop.level))
         
-        if scene.tickLengthMillis >= 100 {
-            scene.tickLengthMillis -= 50
-        } else if scene.tickLengthMillis > 0 {
-            scene.tickLengthMillis -= 10
+        if gameScene.tickLengthMillis >= 100 {
+            gameScene.tickLengthMillis -= 50
+        } else if gameScene.tickLengthMillis > 0 {
+            gameScene.tickLengthMillis -= 10
         } else {
-            scene.tickLengthMillis = 1
+            gameScene.tickLengthMillis = 1
         }
         
         self.tilesLabel.text = "\(core.data.letterQueue.count)"
-        scene.playSound("levelup.mp3")
+        gameScene.playSound("levelup.mp3")
     }
     
     func gameShapeDidDrop(theworddrop: TheWordDrop) {
-        scene.stopTicking()
-        scene.redrawShape(theworddrop.fallingShape!) {
+        gameScene.stopTicking()
+        gameScene.redrawShape(theworddrop.fallingShape!) {
             theworddrop.letShapeFall()
         }
         
-        scene.playSound("drop.mp3")
+        gameScene.playSound("drop.mp3")
     }
     
     func gameShapeDidLand(theworddrop: TheWordDrop) {
-        scene.stopTicking()
+        gameScene.stopTicking()
         self.view.userInteractionEnabled = false
         
         let removedWords = theworddrop.removeCompletedWords()
@@ -263,13 +313,13 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
             self.lastWord.text = "\(wordList)"
             self.tilesLabel.text = "\(core.data.letterQueue.count)"
             
-            scene.animateFoundWords(core.data.queuedBlocks)
-            core.data.queuedBlocks.removeAll(keepCapacity: true)
-            scene.animateCollapsingLines(removedWords.tilesRemoved, fallenBlocks:removedWords.fallenBlocks) {
+            gameScene.animateFoundWords(core.data.queuedBlocks)
+            core.data.queuedBlocks.removeAll()
+            gameScene.animateCollapsingLines(removedWords.tilesRemoved, fallenBlocks:removedWords.fallenBlocks) {
             
                 self.gameShapeDidLand(theworddrop)
             }
-            scene.playSound("bomb.mp3")
+            gameScene.playSound("bomb.mp3")
         } else {
             nextShape()
         }
@@ -280,6 +330,6 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         if Int(theworddrop.level) != core.data.level {
             gameDidLevelUp(theworddrop)
         }
-        scene.redrawShape(theworddrop.fallingShape!) {}
+        gameScene.redrawShape(theworddrop.fallingShape!) {}
     }
 }

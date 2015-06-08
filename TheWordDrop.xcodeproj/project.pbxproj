@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		26071C701B1FB6410003E286 /* spark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 26071C6F1B1FB6410003E286 /* spark.sks */; };
 		26071C721B1FE3AF0003E286 /* EndScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26071C711B1FE3AF0003E286 /* EndScene.swift */; };
+		26071C741B20CF690003E286 /* HelpScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26071C731B20CF690003E286 /* HelpScene.swift */; };
+		26071C761B20E9850003E286 /* AboutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26071C751B20E9850003E286 /* AboutScene.swift */; };
 		261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 261272E51B1ABADF00C132D4 /* Help-568h@2x.png */; };
 		261272E81B1ABADF00C132D4 /* Help-568h@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 261272E61B1ABADF00C132D4 /* Help-568h@3x.png */; };
 		261272EC1B1BDF4A00C132D4 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 261272EB1B1BDF4A00C132D4 /* Settings.bundle */; };
@@ -57,7 +59,16 @@
 		2661FF6E1AECCF8200FA4284 /* words.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2661FF6D1AECCF8200FA4284 /* words.txt */; };
 		267C8FF41B155CF900724CCE /* GameOverScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 267C8FF31B155CF900724CCE /* GameOverScene.sks */; };
 		268219DE1B145292000AD0B6 /* AppIcon.appiconset in Resources */ = {isa = PBXBuildFile; fileRef = 268219DD1B145292000AD0B6 /* AppIcon.appiconset */; };
+		269B58A31B23F05D0095488E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B589F1B23F05D0095488E /* Default-568h@2x.png */; };
+		269B58A41B23F05D0095488E /* Default-iPhone6.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B58A01B23F05D0095488E /* Default-iPhone6.png */; };
+		269B58A51B23F05D0095488E /* Default-iPhone6Plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B58A11B23F05D0095488E /* Default-iPhone6Plus.png */; };
+		269B58A61B23F05D0095488E /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B58A21B23F05D0095488E /* Default@2x.png */; };
+		269B58AA1B243E640095488E /* confetti.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B58A81B243E640095488E /* confetti.png */; };
+		269B58B41B2441CC0095488E /* MyParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 269B58B31B2441CC0095488E /* MyParticle.sks */; };
 		26B699081B030B3D00011C63 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B699071B030B3D00011C63 /* Global.swift */; };
+		26BED6981B25383B00AF1E21 /* help-640.png in Resources */ = {isa = PBXBuildFile; fileRef = 26BED6951B25383B00AF1E21 /* help-640.png */; };
+		26BED6991B25383B00AF1E21 /* help-750.png in Resources */ = {isa = PBXBuildFile; fileRef = 26BED6961B25383B00AF1E21 /* help-750.png */; };
+		26BED69A1B25383B00AF1E21 /* help-1242.png in Resources */ = {isa = PBXBuildFile; fileRef = 26BED6971B25383B00AF1E21 /* help-1242.png */; };
 		26EA60E81B090A0A00C83B44 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E71B090A0A00C83B44 /* logo.png */; };
 		26EA60EB1B09720300C83B44 /* blackbg2.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E91B09720300C83B44 /* blackbg2.png */; };
 		26EA60EC1B09720300C83B44 /* blackbg2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60EA1B09720300C83B44 /* blackbg2@2x.png */; };
@@ -76,6 +87,8 @@
 /* Begin PBXFileReference section */
 		26071C6F1B1FB6410003E286 /* spark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = spark.sks; sourceTree = "<group>"; };
 		26071C711B1FE3AF0003E286 /* EndScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndScene.swift; sourceTree = "<group>"; };
+		26071C731B20CF690003E286 /* HelpScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpScene.swift; sourceTree = "<group>"; };
+		26071C751B20E9850003E286 /* AboutScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutScene.swift; sourceTree = "<group>"; };
 		261272E51B1ABADF00C132D4 /* Help-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Help-568h@2x.png"; path = "TheWordDrop/Help-568h@2x.png"; sourceTree = "<group>"; };
 		261272E61B1ABADF00C132D4 /* Help-568h@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Help-568h@3x.png"; path = "TheWordDrop/Help-568h@3x.png"; sourceTree = "<group>"; };
 		261272EB1B1BDF4A00C132D4 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
@@ -128,7 +141,16 @@
 		2661FF6D1AECCF8200FA4284 /* words.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = words.txt; sourceTree = "<group>"; };
 		267C8FF31B155CF900724CCE /* GameOverScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameOverScene.sks; sourceTree = "<group>"; };
 		268219DD1B145292000AD0B6 /* AppIcon.appiconset */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AppIcon.appiconset; path = "../Library/Containers/com.apple.mail/Data/Library/Mail Downloads/8B843DF2-8916-42D5-B435-0CB5D7941484/icon/ios/AppIcon.appiconset"; sourceTree = "<group>"; };
+		269B589F1B23F05D0095488E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		269B58A01B23F05D0095488E /* Default-iPhone6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-iPhone6.png"; sourceTree = "<group>"; };
+		269B58A11B23F05D0095488E /* Default-iPhone6Plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-iPhone6Plus.png"; sourceTree = "<group>"; };
+		269B58A21B23F05D0095488E /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		269B58A81B243E640095488E /* confetti.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = confetti.png; sourceTree = "<group>"; };
+		269B58B31B2441CC0095488E /* MyParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = MyParticle.sks; path = ../MyParticle.sks; sourceTree = "<group>"; };
 		26B699071B030B3D00011C63 /* Global.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
+		26BED6951B25383B00AF1E21 /* help-640.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "help-640.png"; sourceTree = "<group>"; };
+		26BED6961B25383B00AF1E21 /* help-750.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "help-750.png"; sourceTree = "<group>"; };
+		26BED6971B25383B00AF1E21 /* help-1242.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "help-1242.png"; sourceTree = "<group>"; };
 		26EA60E71B090A0A00C83B44 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		26EA60E91B09720300C83B44 /* blackbg2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackbg2.png; sourceTree = "<group>"; };
 		26EA60EA1B09720300C83B44 /* blackbg2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackbg2@2x.png"; sourceTree = "<group>"; };
@@ -211,10 +233,11 @@
 				2661FED41AE3616A00FA4284 /* AppDelegate.swift */,
 				2661FF1C1AE55E5500FA4284 /* TheWordDrop.swift */,
 				2661FED81AE3616A00FA4284 /* GameScene.swift */,
-				26071C6F1B1FB6410003E286 /* spark.sks */,
 				2661FEDA1AE3616A00FA4284 /* GameViewController.swift */,
 				2648854D1AFAB27800C66482 /* DataManager.swift */,
 				263290561B10EBA2008EBB11 /* StartScene.swift */,
+				26071C731B20CF690003E286 /* HelpScene.swift */,
+				26071C751B20E9850003E286 /* AboutScene.swift */,
 				26071C711B1FE3AF0003E286 /* EndScene.swift */,
 				26B699071B030B3D00011C63 /* Global.swift */,
 				2661FF0A1AE55C6500FA4284 /* Block.swift */,
@@ -225,6 +248,8 @@
 				264885551B001CD600C66482 /* all.json */,
 				2661FEDC1AE3616B00FA4284 /* Main.storyboard */,
 				2661FEE11AE3616B00FA4284 /* LaunchScreen.xib */,
+				26071C6F1B1FB6410003E286 /* spark.sks */,
+				269B58B31B2441CC0095488E /* MyParticle.sks */,
 				261272ED1B1C3CB000C132D4 /* Images.xcassets */,
 				267C8FF31B155CF900724CCE /* GameOverScene.sks */,
 				2661FED21AE3616A00FA4284 /* Supporting Files */,
@@ -235,6 +260,14 @@
 		2661FED21AE3616A00FA4284 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				26BED6951B25383B00AF1E21 /* help-640.png */,
+				26BED6961B25383B00AF1E21 /* help-750.png */,
+				26BED6971B25383B00AF1E21 /* help-1242.png */,
+				269B589F1B23F05D0095488E /* Default-568h@2x.png */,
+				269B58A81B243E640095488E /* confetti.png */,
+				269B58A01B23F05D0095488E /* Default-iPhone6.png */,
+				269B58A11B23F05D0095488E /* Default-iPhone6Plus.png */,
+				269B58A21B23F05D0095488E /* Default@2x.png */,
 				2661FF6D1AECCF8200FA4284 /* words.txt */,
 				264301071B1EBDB7006C09E1 /* spark.png */,
 				26EA60E91B09720300C83B44 /* blackbg2.png */,
@@ -358,14 +391,19 @@
 				2661FF051AE47F8F00FA4284 /* gameboard@2x.png in Resources */,
 				26071C701B1FB6410003E286 /* spark.sks in Resources */,
 				2661FEE31AE3616B00FA4284 /* LaunchScreen.xib in Resources */,
+				269B58A51B23F05D0095488E /* Default-iPhone6Plus.png in Resources */,
 				2661FF231AE712EF00FA4284 /* bomb.mp3 in Resources */,
 				2661FF241AE712EF00FA4284 /* drop.mp3 in Resources */,
 				2661FF021AE47F8F00FA4284 /* background.png in Resources */,
 				2661FF2F1AE86BEB00FA4284 /* greybg@2x.png in Resources */,
 				2661FF041AE47F8F00FA4284 /* gameboard.png in Resources */,
 				264885561B001CD600C66482 /* all.json in Resources */,
+				26BED69A1B25383B00AF1E21 /* help-1242.png in Resources */,
+				26BED6991B25383B00AF1E21 /* help-750.png in Resources */,
+				269B58A61B23F05D0095488E /* Default@2x.png in Resources */,
 				2661FF2E1AE86BEB00FA4284 /* greybg.png in Resources */,
 				261272EC1B1BDF4A00C132D4 /* Settings.bundle in Resources */,
+				269B58A31B23F05D0095488E /* Default-568h@2x.png in Resources */,
 				2661FF6E1AECCF8200FA4284 /* words.txt in Resources */,
 				268219DE1B145292000AD0B6 /* AppIcon.appiconset in Resources */,
 				2661FF2D1AE86BEB00FA4284 /* blackbg@2x.png in Resources */,
@@ -378,11 +416,15 @@
 				2661FF271AE712EF00FA4284 /* theme.mp3 in Resources */,
 				2661FEF91AE47F6700FA4284 /* Sounds in Resources */,
 				2661FEDE1AE3616B00FA4284 /* Main.storyboard in Resources */,
+				269B58B41B2441CC0095488E /* MyParticle.sks in Resources */,
+				26BED6981B25383B00AF1E21 /* help-640.png in Resources */,
 				2661FF061AE47F8F00FA4284 /* whitebg.png in Resources */,
+				269B58A41B23F05D0095488E /* Default-iPhone6.png in Resources */,
 				264301081B1EBDB7006C09E1 /* spark.png in Resources */,
 				2661FF071AE47F8F00FA4284 /* whitebg@2x.png in Resources */,
 				261272EE1B1C3CB000C132D4 /* Images.xcassets in Resources */,
 				261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */,
+				269B58AA1B243E640095488E /* confetti.png in Resources */,
 				267C8FF41B155CF900724CCE /* GameOverScene.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -405,8 +447,10 @@
 				263290571B10EBA2008EBB11 /* StartScene.swift in Sources */,
 				2648854E1AFAB27800C66482 /* DataManager.swift in Sources */,
 				2661FF0F1AE55D6C00FA4284 /* ShapeSquare.swift in Sources */,
+				26071C761B20E9850003E286 /* AboutScene.swift in Sources */,
 				2661FED91AE3616A00FA4284 /* GameScene.swift in Sources */,
 				2661FF171AE55DE000FA4284 /* ShapeJ.swift in Sources */,
+				26071C741B20CF690003E286 /* HelpScene.swift in Sources */,
 				26071C721B1FE3AF0003E286 /* EndScene.swift in Sources */,
 				2661FF331AE8AF5B00FA4284 /* ShapeSingle.swift in Sources */,
 				2661FF1D1AE55E5500FA4284 /* TheWordDrop.swift in Sources */,

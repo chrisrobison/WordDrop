@@ -28,7 +28,8 @@ class DataManager {
         screenSize = 0.0,
         screenWidth:CGFloat = 0,
         screenHeight:CGFloat = 0,
-        wordCache = [String: Int]()
+        wordCache = [String: Int](),
+        viewCache = [String: UIView]()
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",
@@ -75,12 +76,15 @@ class DataManager {
         // =========DEBUG========= //
         println("Found \(found.count) words: \(found)")
 
-        var longest = ""
-        for word in found {
-            if count(word) > count(longest) {
-                longest = word
+        var longest = found[0]
+        if found.count > 1 {
+            for word in found {
+                if count(word) > count(longest) {
+                    longest = word
+                }
             }
         }
+        
         var tiles:Array<Block> = []
         
         if let range = letters.rangeOfString(longest) {
@@ -103,7 +107,7 @@ class DataManager {
         if ((wordCache[word]) != nil) {
             return ""
         }
-        wordCache[word] = 1
+        wordCache[word] = -1
         
         var letters = Array(word + "$")
         // println("checkWord: looking for: \(letters)")
@@ -131,7 +135,7 @@ class DataManager {
                 return ""
             }
         }
-        
+        wordCache[word] = 1
         return lastword
     }
     

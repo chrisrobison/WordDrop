@@ -1,5 +1,5 @@
 //
-//  StartScene.swift
+//  HelpScene.swift
 //  TheWordDrop
 //
 //  Created by Christopher Robison on 5/22/15.
@@ -9,16 +9,55 @@
 import UIKit
 import SpriteKit
 
-protocol StartSceneDelegate {
-    func startSceneDidFinish(myScene: StartScene, command:String)
+protocol HelpSceneDelegate {
+    func helpSceneDidFinish(myScene: HelpScene, command:String)
 }
 
-class StartScene: SKScene {
-    var thisDelegate: StartSceneDelegate?
+class HelpScene: SKScene {
+    var thisDelegate: HelpSceneDelegate?
     
+    /*
+    override init(size: CGSize) {
+    super.init(size: size)
+    
+    //1
+    self.backgroundColor = SKColor.blackColor()
+    
+    let message = "Game Over"
+    
+    var label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    label.text = message
+    label.fontSize = 36
+    label.fontColor = SKColor.yellowColor()
+    label.position = CGPointMake(self.size.width/2, self.size.height/2)
+    self.addChild(label)
+    
+    
+    
+    }
+    
+    override func didMoveToView(view: SKView) {
+    println("didMoveToView called in HelpScene")
+    
+    let leftMargin = (view.bounds.width/2) / 2
+    let topMargin = view.bounds.height/2
+    
+    let playAgainButton = UIButton(frame: CGRectMake(leftMargin, topMargin + 30, view.bounds.width / 2, 50))
+    playAgainButton.backgroundColor = UIColor(hue: 206.0/360.0, saturation: 0.66, brightness: 0.5, alpha: 1.0)
+    playAgainButton.setTitle("Play Again", forState: UIControlState.Normal)
+    playAgainButton.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal)
+    playAgainButton.addTarget(self, action: "buttonAction:", forControlEvents: UIControlEvents.TouchDown)
+    playAgainButton.layer.cornerRadius = 10
+    
+    self.view!.addSubview(playAgainButton)
+    
+    
+    }
+    */
     override init(size: CGSize) {
         super.init(size: size)
         
+        //1
         self.backgroundColor = SKColor(hue: 0.0, saturation: 0.0, brightness: 0.24, alpha: 1.0)
         
         var logo = SKSpriteNode(imageNamed: "AltLogo")
@@ -72,31 +111,12 @@ class StartScene: SKScene {
         
         return shadowView
     }
-
+    
     
     func buttonAction(sender:UIButton) {
-        var action = sender.currentTitle!
-        
-        switch action {
-            case "Play Again":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-            case "New Game":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-            case "Help":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "help")
-            
-            case "About":
-                return self.thisDelegate!.startSceneDidFinish(self, command: "about")
-
-            default:
-                return self.thisDelegate!.startSceneDidFinish(self, command: "start")
-            
-        }
         if sender.currentTitle=="Play Again" || sender.currentTitle == "New Game" {
-            // close StartScene and start the game again
-            self.thisDelegate!.startSceneDidFinish(self, command: "restart")
+            // close HelpScene and start the game again
+            self.thisDelegate!.helpSceneDidFinish(self, command: "restart")
         }
     }
     
