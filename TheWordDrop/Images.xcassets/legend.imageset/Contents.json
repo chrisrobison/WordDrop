@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Logo-256.png"
+      "filename" : "legend.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "Logo-512.png"
+      "filename" : "legend@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "Logo.png"
+      "filename" : "legend@3x.png"
     }
   ],
   "info" : {

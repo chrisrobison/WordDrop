@@ -14,11 +14,18 @@ var on6plus : Bool {
     return UIScreen.mainScreen().traitCollection.displayScale > 2.5
 }
 
-class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecognizerDelegate, StartSceneDelegate {
+class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecognizerDelegate {
     var scene: GameScene!, theworddrop:TheWordDrop!, panPointReference:CGPoint?,
-        startView: SKView?, startScene: StartScene!, gameScene: GameScene!
+    gameScene: GameScene!,
+    startView: SKView?
     
-    let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 1.0)
+    var views = [String:SKView]()
+    
+    let transition = SKTransition.pushWithDirection(.Left, duration: NSTimeInterval(3.0))
+    
+        //flipHorizontalWithDuration(NSTimeInterval(3.0))
+//        moveInWithDirection(.Down, duration: NSTimeInterval(3.0))
+        // revealWithDirection(SKTransitionDirection.Down, duration: 2.0)
     var skView:SKView!
     
     @IBOutlet weak var scoreLabel: UILabel!
@@ -31,9 +38,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     @IBOutlet weak var infoPanel: UIView!
     @IBOutlet weak var wordPanel: UIView!
     @IBOutlet weak var scorePanel: UIView!
-    @IBAction func settingsAction(sender: UIButton) {
-            showStart()
-    }
+    @IBOutlet weak var wordsLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,130 +50,73 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         core.data.viewCache["words"] = wordPanel
         core.data.viewCache["score"] = scorePanel
         
-        core.data.settingsScene = startScene
+        core.data.wordsLabel = wordsLabel
+        core.data.scoreLabel = scoreLabel
+        core.data.lastWord = lastWord
         
         gameScene = GameScene(size: skView.bounds.size)
         gameScene.scaleMode = .AspectFill
         scene = gameScene
-        adjustFontsForScreenSize()
         
-        skView.presentScene(gameScene, transition: transition)
-
-        startView = SKView(frame: skView.bounds)
-        startScene = StartScene(size: skView.bounds.size)
-        startScene!.thisDelegate = self
-        startView?.presentScene(startScene)
-        
-        // Present the scene.
-        skView.addSubview(startView!)
-        
-        
-    }
-
-    func startGame() {
-        startView?.removeFromSuperview()
-        gameScene = GameScene(size: skView.bounds.size)
-        gameScene.scaleMode = .AspectFill
-
         gameScene.tick = didTick
-
+        
         theworddrop = TheWordDrop()
         theworddrop.delegate = self
         theworddrop.beginGame()
-        
-        // Present the scene.
-        skView.presentScene(gameScene)
-    }
-    
-    func showStart() {
-        let startScene = StartScene(size: self.view.frame.size)
-        startScene.scaleMode = SKSceneScaleMode.AspectFill
-        
-        skView.presentScene(startScene, transition:transition)
-    }
 
-    func showHelp() {
-        let helpScene = HelpScene(size: self.view.frame.size)
-        helpScene.scaleMode = SKSceneScaleMode.AspectFill
-        
-        skView.presentScene(helpScene, transition:transition)
-    }
+        adjustFontsForScreenSize()
 
-    func showAbout() {
-        let aboutScene = AboutScene(size: self.view.frame.size)
-        aboutScene.scaleMode = SKSceneScaleMode.AspectFill
+        skView.presentScene(gameScene, transition: transition)
         
-        skView.presentScene(aboutScene, transition:transition)
     }
 
     func adjustFontsForScreenSize() {
         var fontAdjustment = 0
+        var screenSize = UIScreen.mainScreen().bounds.size
         
-        if UIScreen.mainScreen().bounds.size.height == 480 {
+        if screenSize.height == 480 {
             core.data.screenSize = 480
+            println("Detected iPhone 4/4s : screenSize=480")
             // iPhone 4
             fontAdjustment = -2
-        } else if UIScreen.mainScreen().bounds.size.height == 568 {
+        } else if screenSize.height == 568 {
             core.data.screenSize = 568
+            println("Detected iPhone 5/5s : screenSize=568")
             // IPhone 5
-            fontAdjustment = -2
-        } else if UIScreen.mainScreen().bounds.size.width == 375 {
+            fontAdjustment = -1
+        } else if screenSize.width == 375 {
+            println("Detected iPhone 6 : screenSize=375")
             core.data.screenSize = 375
             // iPhone 6
-            fontAdjustment = 0
-        } else if UIScreen.mainScreen().bounds.size.width == 414 {
+            fontAdjustment = 1
+        } else if screenSize.width == 414 {
+            println("Detected iPhone 6+ : screenSize=414")
             core.data.screenSize = 414
             // iPhone 6+
             fontAdjustment = 3
-        } else if UIScreen.mainScreen().bounds.size.width == 768 {
+        } else if screenSize.width == 768 {
+            println("Detected iPad : screenSize=768")
             core.data.screenSize = 768
             // iPad
-            fontAdjustment = 0
+            fontAdjustment = 10
+            
+            NumColumns = 11
+            PreviewColumn = 11
+            
         }
         
-        for lab in [self.scoreLabel, self.levelLabel, self.tilesLabel, self.scoreTitle, self.levelTitle, self.tilesTitle] {
+        for lab in [self.scoreLabel, self.levelLabel, self.tilesLabel, self.scoreTitle, self.levelTitle, self.tilesTitle, self.wordsLabel] {
             let f = lab.font
+            let s = lab.frame.size
+            println("\(lab.text) size: \(s)")
+            println("Adjusting \(lab.text) from \(f.pointSize) to \(f.pointSize + CGFloat(fontAdjustment))")
             lab.font = f.fontWithSize(f.pointSize + CGFloat(fontAdjustment))
         }
     }
     
     func didMoveToView(view:SKView) {
-        println("didMoveToView called in GameViewController")
-    }
-
-    func handleNavCommands(command: String) {
-        switch command {
-            case "start":
-                return startGame()
-            case "help":
-                return showHelp()
-            case "about":
-                return showAbout()
-            default:
-                return startGame()
-        }
-       
     }
     
-    func startSceneDidFinish(myScene: StartScene, command: String) {
-        println("GameViewController.startSceneDidFinish called")
-        myScene.view!.removeFromSuperview()
-
-        handleNavCommands(command)
-    }
-    
-    func helpSceneDidFinish(myScene: HelpScene, command: String) {
-        println("GameViewController.helpSceneDidFinish called")
-        myScene.view!.removeFromSuperview()
-        handleNavCommands(command)
-    }
-    
-    func aboutSceneDidFinish(myScene: AboutScene, command: String) {
-        println("GameViewController.aboutSceneDidFinish called")
-        myScene.view!.removeFromSuperview()
-        handleNavCommands(command)
-    }
-
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -182,7 +130,9 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     }
     
     @IBAction func didTap(sender: UITapGestureRecognizer) {
-        theworddrop.rotateShape()
+        if theworddrop != nil {
+            theworddrop.rotateShape()
+        }
     }
     
     @IBAction func didPan(sender: UIPanGestureRecognizer) {
@@ -264,10 +214,13 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         view.userInteractionEnabled = false
         gameScene.stopTicking()
         gameScene.playSound("gameover.mp3")
+        core.data.musicPlayer?.stop()
         gameScene.animateCollapsingLines(theworddrop.removeAllBlocks(), fallenBlocks: Array<Array<Block>>()) {
-            //theworddrop.beginGame()
-            self.view.userInteractionEnabled = true
-            self.gameScene.view?.addSubview(self.startView!)
+            // self.showStart()
+            
+            let startViewController = self.storyboard!.instantiateViewControllerWithIdentifier("StartMenuViewController") as! StartMenuViewController
+            self.performSegueWithIdentifier("StartSegue", sender: self)
+            // self.presentViewController(startViewController, animated: true, completion: nil)
         }
     }
     
@@ -309,6 +262,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
             while (theworddrop.lastWords.count > 14) {
                 theworddrop.lastWords.removeAtIndex(0)
             }
+            
             var wordList = "\n".join(theworddrop.lastWords)
             self.lastWord.text = "\(wordList)"
             self.tilesLabel.text = "\(core.data.letterQueue.count)"

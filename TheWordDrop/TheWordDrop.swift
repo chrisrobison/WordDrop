@@ -1,12 +1,12 @@
  import AVFoundation
  
- let NumColumns = 8
- let NumRows = 18
+ var NumColumns = 8
+ var NumRows = 18
  
- let StartingColumn = 4
+ var StartingColumn = 4
  let StartingRow = 1
  
- let PreviewColumn = 8
+ var PreviewColumn = 8
  let PreviewRow = 4
  
  let PointsPerLine = 10
@@ -34,7 +34,6 @@
  }
  
  class TheWordDrop {
-    let dataManager = DataManager()
     let synth = AVSpeechSynthesizer()
 
     var delegate:TheWordDropDelegate?
@@ -48,7 +47,7 @@
         level:UInt32,
         lastWord:String,
         lastPoint:Int,
-        lastWords:Array<String> = [],
+        lastWords = [String](count:15, repeatedValue:""),
         myUtterance:AVSpeechUtterance?
     
     init() {
@@ -59,6 +58,20 @@
         
         fallingShape = nil
         nextShape = nil
+        
+        if (core.data.screenSize == 768) {
+            NumColumns = 11
+            PreviewColumn = 11
+            StartingColumn = Int(round(Double(NumColumns) / 2.0))
+        }
+        
+        if (core.data.screenSize == 480) {
+            NumColumns = 9
+            PreviewColumn = 9
+            NumRows = 17
+            StartingColumn = Int(round(Double(NumColumns) / 2.0))
+        }
+        
         
         blockArray = Array2D<Block>(columns: NumColumns, rows: NumRows)
     }
@@ -223,7 +236,7 @@
             
             // Check for words, calculate points when found
             if (haveTiles) {
-                (foundWords, tiles) = dataManager.findWords(rowString, blocks: rowOfBlocks)
+                (foundWords, tiles) = core.data.findWords(rowString, blocks: rowOfBlocks)
 
                 if foundWords.count > 0 {
                     removedTiles.append(tiles)
@@ -244,7 +257,7 @@
             var colOfBlocks = colsOfBlocks[column],
                 colString = colStrings[column]
             
-            (foundWords, tiles) = dataManager.findWords(colString, blocks: colOfBlocks)
+            (foundWords, tiles) = core.data.findWords(colString, blocks: colOfBlocks)
             
             if foundWords.count > 0 {
                 removedTiles.append(tiles)
@@ -276,12 +289,14 @@
         var fallenBlocksArray = Array<Block>()
         
         for tileQueue in removedTiles {
-            for tile in tileQueue {
+           /* for tile in tileQueue {
                 blockArray[tile.column, tile.row] = nil
             }
+            */
             
             for tile in tileQueue {
-            
+                blockArray[tile.column, tile.row] = nil
+
                 for var row = tile.row - 1; row > 0; row-- {
                     if let block = blockArray[tile.column, row] {
                         var newRow = row
@@ -345,6 +360,7 @@
     func explodeBomb(bombs:Array<Block?>) -> Array<Block> {
         var tmpblocks = Array<Block>()
         for bomb in bombs {
+            sayWord("kah boom! boom! boom!")
             tmpblocks.append(bomb!)
             if bomb!.column > 1 {
                 if blockArray[bomb!.column - 1, bomb!.row] != nil {
@@ -389,10 +405,13 @@
         }
         return tmpblocks
     }
+    
     func sayWord(word:String) {
-        myUtterance = AVSpeechUtterance(string: word)
-        myUtterance!.rate = 0.3
-        synth.speakUtterance(myUtterance)
+        if core.data.prefs["speak"] as! Bool == true {
+            myUtterance = AVSpeechUtterance(string: word)
+            myUtterance!.rate = 0.3
+            synth.speakUtterance(myUtterance)
+        }
     }
     
     func dropShape() {

@@ -6,12 +6,6 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string></string>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Difficulty</string>
@@ -42,6 +36,12 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Skill Level</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSSliderSpecifier</string>
 			<key>Key</key>
 			<string>wordlen_preference</string>
@@ -51,6 +51,8 @@
 			<integer>3</integer>
 			<key>MaximumValue</key>
 			<integer>8</integer>
+			<key>MinimumValueImage</key>
+			<string></string>
 		</dict>
 		<dict>
 			<key>Title</key>

@@ -11,6 +11,19 @@ import AVFoundation
 
 let TickLengthLevelOne = NSTimeInterval(600)
 
+extension String {
+    func toBool() -> Bool? {
+        switch self {
+        case "True", "true", "yes", "1":
+            return true
+        case "False", "false", "no", "0":
+            return false
+        default:
+            return nil
+        }
+    }
+}
+
 class GameScene: SKScene {
     let gameLayer = SKNode()
     let shapeLayer = SKNode()
@@ -20,7 +33,6 @@ class GameScene: SKScene {
     let scoreLayer = SKNode()
     let infoLayer = SKNode()
     var BlockSize:CGFloat = 32
-    var musicPlayer = AVAudioPlayer()
     
     let LayerPosition = CGPoint(x: 0, y: 0)
 
@@ -36,10 +48,17 @@ class GameScene: SKScene {
         fatalError("NSCoder not supported")
     }
     
-    
     override init(size: CGSize) {
         super.init(size: size)
-        self.BlockSize = self.size.height / 18
+        self.BlockSize = self.size.height / CGFloat(NumRows)
+        
+        if (core.data.screenSize == 480) {
+            self.BlockSize = 28
+        }
+        
+        println("BlockSize: \(BlockSize)")
+        
+        self.anchorPoint = CGPointMake(0, 0)
         //self.BlockSize = self.size.width / 10
         core.data.BlockSize = self.BlockSize
         core.data.screenWidth = self.size.width
@@ -54,99 +73,125 @@ class GameScene: SKScene {
         addChild(background)
         addChild(gameLayer)
         
-        let gameBoardTexture = SKTexture(imageNamed: "gameboard")
+        var gameBoardTexture:SKTexture
+        if (core.data.screenSize == 768) {
+            gameBoardTexture = SKTexture(imageNamed: "gameboard-768")
+        } else {
+            gameBoardTexture = SKTexture(imageNamed: "gameboard")
+        }
         // let gameBoard = SKSpriteNode(texture: gameBoardTexture, size: CGSizeMake(BlockSize * CGFloat(NumColumns), BlockSize * CGFloat(NumRows)))
         let gameBoard = SKSpriteNode(texture: gameBoardTexture, size: CGSizeMake(self.size.width, self.frame.height))
         gameBoard.anchorPoint = anchorPoint
         gameBoard.position = LayerPosition
         gameBoard.zPosition = 0
         
-        let previewWidth = self.frame.size.width * 0.20
+        var previewMultiplier = 0.20
+        var xAdjust = CGFloat(0.0)
+        var yAdjust = CGFloat(10.0)
+        var yAdjust2 = CGFloat(3.0)
+        var yMultiplier = CGFloat(0.41)
+        
+        if (core.data.screenSize == 768) {
+            previewMultiplier = 0.17
+            xAdjust = CGFloat(6)
+            yAdjust = -25
+        }
+        
+        if (core.data.screenSize == 480) {
+            yAdjust = -25
+            yMultiplier = CGFloat(0.39)
+            yAdjust2 = 0
+        }
+        
+        if (core.data.screenSize == 568) {
+            yAdjust = -17
+        }
+        
+        if (core.data.screenSize == 414) {
+            yAdjust = -10
+        }
+        
+        if (core.data.screenSize == 375) {
+            yAdjust = -14
+        
+        }
+        
+        if (core.data.screenSize == 768) {
+            yAdjust = -28
+            yAdjust2 = 15
+        }
+        
+        let previewWidth = self.frame.size.width * CGFloat(previewMultiplier)
         
         shapeLayer.position = CGPoint(x:0, y:0)
         shapeLayer.addChild(gameBoard)
         gameLayer.addChild(shapeLayer)
         
         let  previewTop = 92.0
-        println("self.size: \(self.size.width)x\(self.size.height)")
-        println("self.frame.size: \(self.frame.size.width)x\(self.frame.size.height)")
         
         previewLayer.position = LayerPosition
-        println("previewWidth: \(previewWidth)")
         
-        var previewNode = makeInfoPanel(previewWidth)   // Passing height, not width, it just happens to be the same size
-        previewNode.position = CGPoint(x:self.size.width - (previewWidth / 2), y: -((previewWidth * 2) - (previewWidth / 2) + 3))
+        var previewNode = makeInfoPanel(previewWidth - 6, height: previewWidth)   // Passing height, not width, it just happens to be the same size
+        previewNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: -((previewWidth * 2) - (previewWidth / 2) + yAdjust2))
+        
+        var wnY = -(core.data.screenHeight * 0.75) + ((core.data.screenHeight * 0.39) / 2) + core.data.wordsLabel!.frame.size.height
+        
+        var wordsNode = makeInfoPanel(previewWidth - 6, height: core.data.screenHeight * yMultiplier)
+        wordsNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: wnY + yAdjust)
+        var scoreNode = makeInfoPanel(previewWidth - 6, height: core.data.screenHeight * 0.21)
+        scoreNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: -(core.data.screenHeight - ((core.data.screenHeight * 0.21) / 2) - 8))
+        
         
         previewLayer.addChild(previewNode)
+        previewLayer.addChild(wordsNode)
+        previewLayer.addChild(scoreNode)
+        
         gameLayer.addChild(previewLayer)
         
         gameLayer.zPosition = 0
-        
-/*
-        var testNode = SKSpriteNode(color: UIColor.redColor(), size: CGSizeMake(100,100))
-        testNode.position = CGPoint(x:self.size.width - previewWidth / 2, y: -self.size.height / 2)
-        testNode.zPosition = 1000
-        gameLayer.addChild(testNode)
-*/
-        // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
 
+        // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
+        self.playBackgroundMusic()
         self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
         
     }
 
     func playBackgroundMusic() {
-        var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
         
-        var error: NSError?
-        self.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
-        self.musicPlayer.volume = 0.5
-        self.musicPlayer.prepareToPlay()
-        self.musicPlayer.play()
+        if core.data.musicPlayer == nil {
+            var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
+        
+            var error: NSError?
+            core.data.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
+            core.data.musicPlayer!.volume = 0.5
+            core.data.musicPlayer!.numberOfLoops = -1
+            core.data.musicPlayer!.prepareToPlay()
+        }
+        if core.data.prefs["bgmusic"] as! Bool == true {
+            core.data.musicPlayer!.play()
+        }
     }
     
-    func setupInfoPanel(theView: UIView) -> SKSpriteNode {
-        var myNode:SKSpriteNode = makeInfoPanel(theView.frame.height)
+    func setupInfoPanel(theView: UIView, heightPercent:CGFloat) -> SKSpriteNode {
+        var padding:CGFloat = 5.0
+        var width:CGFloat = round(core.data.screenWidth * 0.20 - (padding * 2))
+        var height:CGFloat = round(core.data.screenHeight * heightPercent)
+        var myNode:SKSpriteNode = makeInfoPanel(width, height: height)
+        
         var myPosition = convertPointFromView(theView.frame.origin)
-        myNode.anchorPoint = CGPoint(x:0, y:1)
-        println("view.position: \(myPosition)")
-        println("screenHeight: \(core.data.screenHeight)")
-        println("view.frame.origin: \(theView.frame.origin)")
-        println("view.frame: \(theView.frame)")
-        println("view.frame.height: \(theView.frame.height)")
-        println("view.parent.frame.height: \(theView.frame.height)")
         
-        var w = core.data.screenWidth * 0.20
-        var x = core.data.screenWidth - (w / 2)
-        var y = core.data.screenHeight + myPosition.y
-        
+        var y = myPosition.y - (height / 2) + 30
+        var x = CGFloat(core.data.screenWidth - (width / 2) - padding)
         myNode.position = CGPointMake(x, y)
-        myNode.size = CGSizeMake(w, theView.frame.height)
-        
-        println("node - x: \(x) y: \(y)")
-        println("node.frame.height: \(myNode.frame.height)")
-        println("node.frame: \(myNode.frame)")
+        myNode.size = CGSizeMake(width, height)
+
         return myNode
     }
     
+    func convert(point: CGPoint)->CGPoint {
+        return self.view!.convertPoint(CGPoint(x: point.x, y:self.view!.frame.height-point.y), toScene:self)
+    }
     override func didMoveToView(view: SKView) {
-        println("didMoveToView in GameScene")
-        var myWidth = core.data.screenWidth * 0.2
-        println("myWidth: \(myWidth)")
-        
-        var myNode:SKSpriteNode
-        if let scorePanel = core.data.viewCache["score"] {
-            println("Se†ting up 'score' info panel")
-            myNode = setupInfoPanel(scorePanel)
-            infoLayer.addChild(myNode)
-        }
-        
-        if let wordsPanel = core.data.viewCache["words"] {
-            println("Se†ting up 'words' info panel")
-            myNode = setupInfoPanel(wordsPanel)
-            infoLayer.addChild(myNode)
-        }
-        infoLayer.position = CGPoint(x:0, y:0)
-        gameLayer.addChild(infoLayer)
     }
     
     func newSpark() -> SKEmitterNode {
@@ -155,19 +200,18 @@ class GameScene: SKScene {
         return newspark
     }
     
-    func makeInfoPanel(panelHeight: CGFloat) -> SKSpriteNode {
-        let width = self.frame.size.width * 0.20
-        let previewShape = SKShapeNode(rectOfSize: CGSize(width: width - 8, height:panelHeight), cornerRadius:6)
+    func makeInfoPanel(width: CGFloat, height: CGFloat) -> SKSpriteNode {
+        let previewShape = SKShapeNode(rectOfSize: CGSize(width: width, height: height), cornerRadius:6)
         previewShape.position = CGPoint(x:0, y:-3)
         previewShape.fillColor = UIColor.whiteColor()
         previewShape.strokeColor = UIColor.clearColor()
         
-        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width: width - 8, height:panelHeight), cornerRadius:6)
+        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width: width, height: height), cornerRadius:6)
         previewShape2.position = CGPoint(x:0, y:0)
         previewShape2.fillColor = UIColor.blackColor()
         previewShape2.strokeColor = UIColor.clearColor()
         
-        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:width - 8, height:panelHeight + 3))
+        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:width - 8, height:height + 3))
         previewNode.anchorPoint = CGPoint(x:0, y:1.0)
         
         previewNode.addChild(previewShape)
@@ -200,7 +244,9 @@ class GameScene: SKScene {
     }
 
     func playSound(sound:String) {
-        runAction(sounds[sound])
+        if (core.data.prefs["soundeffects"] as! Bool == true) {
+            runAction(sounds[sound])
+        }
     }
     
     func startTicking() {
@@ -210,6 +256,7 @@ class GameScene: SKScene {
     func stopTicking() {
         lastTick = nil
     }
+    
     func pointForColumn(column: Int, row: Int) -> CGPoint {
         let x: CGFloat = LayerPosition.x + (CGFloat(column) * BlockSize) + (BlockSize / 2)
         let y: CGFloat = LayerPosition.y - ((CGFloat(row) * BlockSize) + (BlockSize / 2))

@@ -35,7 +35,7 @@ enum Orientation: Int, Printable {
 }
 
 // The number of total shape varieties
-let NumShapeTypes: UInt32 = 8
+let NumShapeTypes: UInt32 = 9
 // let Level = TheWordDrop.getLevel()
 
 // Shape indexes
@@ -91,11 +91,9 @@ class Shape: Hashable, Printable {
         self.row = row
         self.orientation = orientation
         
-        
         initializeBlocks()
     }
     
-    // #5
     convenience init(column:Int, row:Int) {
         self.init(column:column, row:row, color:BlockColor.random(), orientation:Orientation.random())
     }
@@ -178,9 +176,9 @@ class Shape: Hashable, Printable {
         case 2:
             return TripleShape(column:startingColumn, row:startingRow)
         case 3:
-            return TShape(column:startingColumn, row:startingRow)
+            return LineShape(column:startingColumn, row:startingRow)
         case 4:
-            return SquareShape(column:startingColumn, row:startingRow)
+            return TShape(column:startingColumn, row:startingRow)
         case 5:
             return JShape(column:startingColumn, row:startingRow)
         case 6:
@@ -188,9 +186,11 @@ class Shape: Hashable, Printable {
         case 7:
             return SShape(column:startingColumn, row:startingRow)
         case 8:
-            return LineShape(column:startingColumn, row:startingRow)
-        default:
+            return SquareShape(column:startingColumn, row:startingRow)
+        case 9:
             return ZShape(column:startingColumn, row:startingRow)
+        default:
+            return SingleShape(column:startingColumn, row:startingRow)
         }
     }
 }

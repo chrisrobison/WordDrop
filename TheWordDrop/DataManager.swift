@@ -8,6 +8,7 @@
 
 import Foundation
 import SpriteKit
+import AVFoundation
 
 let LetterValues: Dictionary<String, Int> = [
     "A": 1, "B": 3, "C": 3, "D": 2, "E": 1,
@@ -29,7 +30,12 @@ class DataManager {
         screenWidth:CGFloat = 0,
         screenHeight:CGFloat = 0,
         wordCache = [String: Int](),
-        viewCache = [String: UIView]()
+        viewCache = [String: UIView](),
+        wordsLabel:UILabel?,
+        scoreLabel:UILabel?,
+        lastWord:UILabel?,
+        prefs = [String:AnyObject](),
+        musicPlayer:AVAudioPlayer?
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",
@@ -179,19 +185,59 @@ class DataManager {
         wordCache.removeAll()
     }
     
+    func getPrefs() -> [String:AnyObject] {
+        var prefs = NSUserDefaults.standardUserDefaults()
+        var myPrefs = [String:AnyObject]()
+        var firstRun = !prefs.boolForKey("firstrun")
+        
+        var bgmusicState : Bool? = prefs.boolForKey("bgmusic")
+        if firstRun || bgmusicState == nil {
+            bgmusicState = true
+            prefs.setBool(true, forKey: "bgmusic")
+        }
+        myPrefs["bgmusic"] = bgmusicState
+        
+        var speakState : Bool? = prefs.boolForKey("speak")
+        if firstRun || speakState == nil {
+            speakState = true
+            prefs.setBool(true, forKey: "speak")
+        }
+        myPrefs["speak"] = speakState
+        
+        var effectsState : Bool? = prefs.boolForKey("soundeffects")
+        if firstRun || effectsState == nil {
+            effectsState = true
+            prefs.setBool(true, forKey: "soundeffects")
+        }
+        myPrefs["soundeffects"] = effectsState
+        
+        var skillState : Int? = prefs.integerForKey("skill")
+        if firstRun || skillState == nil {
+            skillState = 1
+            prefs.setInteger(1, forKey: "skill")
+        }
+        myPrefs["skill"] = skillState
+        prefs.setBool(true, forKey: "firstrun")
+        prefs.synchronize()
+        
+        return myPrefs
+    }
+    
     init() {
         var path     = NSBundle.mainBundle().pathForResource("all", ofType: "json"),
             url      = NSURL(fileURLWithPath: path!),
             data     = NSData(contentsOfURL: url!),
             content  = NSJSONSerialization.JSONObjectWithData(data!, options: nil, error: nil) as? [[String: AnyObject]]
         
-        
         self.json = JSON(data: data!)
         self.level = 1
-        initLetters(1)
+        self.initLetters(1)
+        prefs = getPrefs()
+
     }
     
 }
+
 func *(string: String, scalar: Int) -> String {
     let array = Array(count: scalar, repeatedValue: string)
     return "".join(array)
