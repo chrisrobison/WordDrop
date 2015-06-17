@@ -627,7 +627,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = TheWordDrop;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "090c2a7e-5667-4c87-9339-451c09fbfaec";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -636,13 +636,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				INFOPLIST_FILE = TheWordDrop/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = TheWordDrop;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "090c2a7e-5667-4c87-9339-451c09fbfaec";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

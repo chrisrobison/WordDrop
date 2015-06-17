@@ -167,7 +167,7 @@ class Shape: Hashable, Printable {
         var cnt: UInt32 = level < NumShapeTypes ? level : NumShapeTypes
         
         // var startColumn = Int(arc4random_uniform(9))
-        // cnt = 8
+         // cnt = 9
         switch Int(arc4random_uniform(cnt)) {
         case 0:
             return SingleShape(column:startingColumn, row:startingRow)
