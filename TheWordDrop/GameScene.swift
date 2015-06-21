@@ -9,7 +9,7 @@
 import SpriteKit
 import AVFoundation
 
-let TickLengthLevelOne = NSTimeInterval(600)
+let TickLengthLevelOne = NSTimeInterval(600 - (core.data.level * 50))
 
 extension String {
     func toBool() -> Bool? {
@@ -37,7 +37,7 @@ class GameScene: SKScene {
     let LayerPosition = CGPoint(x: 0, y: 0)
 
     var tick:(() -> ())?
-    var tickLengthMillis = TickLengthLevelOne
+    var tickLengthMillis = TickLengthLevelOne - (core.data.prefs["skill"] as! Double * 100)
     var lastTick:NSDate?
     var gameOverView: SKView?
     var startSceneView: SKView?
@@ -91,34 +91,30 @@ class GameScene: SKScene {
         var yAdjust2 = CGFloat(3.0)
         var yMultiplier = CGFloat(0.41)
         
-        if (core.data.screenSize == 768) {
-            previewMultiplier = 0.17
-            xAdjust = CGFloat(6)
-            yAdjust = -25
-        }
-        
         if (core.data.screenSize == 480) {
-            yAdjust = -25
+            yAdjust = -4
             yMultiplier = CGFloat(0.39)
-            yAdjust2 = 0
+            yAdjust2 = 2
         }
         
         if (core.data.screenSize == 568) {
-            yAdjust = -17
+            yAdjust = 0
         }
         
         if (core.data.screenSize == 414) {
-            yAdjust = -10
+            yAdjust = 0
         }
         
         if (core.data.screenSize == 375) {
-            yAdjust = -14
+            yAdjust = 0
         
         }
         
         if (core.data.screenSize == 768) {
-            yAdjust = -28
-            yAdjust2 = 15
+            previewMultiplier = 0.17
+            xAdjust = CGFloat(6)
+            yAdjust = -18
+            yAdjust2 = 18
         }
         
         let previewWidth = self.frame.size.width * CGFloat(previewMultiplier)
@@ -131,15 +127,16 @@ class GameScene: SKScene {
         
         previewLayer.position = LayerPosition
         
-        var previewNode = makeInfoPanel(previewWidth - 6, height: previewWidth)   // Passing height, not width, it just happens to be the same size
-        previewNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: -((previewWidth * 2) - (previewWidth / 2) + yAdjust2))
+        // println("screenSize: \(core.data.screenSize)\nyAdjust: \(yAdjust)\nyMultiplier: \(yMultiplier)\nxAdjust: \(xAdjust)")
         
-        var wnY = -(core.data.screenHeight * 0.75) + ((core.data.screenHeight * 0.39) / 2) + core.data.wordsLabel!.frame.size.height
+        var previewNode = makeInfoPanel(previewWidth - 6, height: previewWidth)
+        previewNode.position = CGPoint(x:self.size.width - (previewWidth + xAdjust) + 3, y: -((previewWidth * 2) + yAdjust2))
         
         var wordsNode = makeInfoPanel(previewWidth - 6, height: core.data.screenHeight * yMultiplier)
-        wordsNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: wnY + yAdjust)
+        wordsNode.position = CGPoint(x:self.size.width - (previewWidth + xAdjust) + 3, y: -(core.data.screenHeight * 0.75) + yAdjust)
+        
         var scoreNode = makeInfoPanel(previewWidth - 6, height: core.data.screenHeight * 0.21)
-        scoreNode.position = CGPoint(x:self.size.width - ((previewWidth / 2) + xAdjust), y: -(core.data.screenHeight - ((core.data.screenHeight * 0.21) / 2) - 8))
+        scoreNode.position = CGPoint(x:self.size.width - ((previewWidth) + xAdjust) + 3, y: -(core.data.screenHeight - 8))
         
         
         previewLayer.addChild(previewNode)
@@ -172,53 +169,10 @@ class GameScene: SKScene {
         }
     }
     
-    func setupInfoPanel(theView: UIView, heightPercent:CGFloat) -> SKSpriteNode {
-        var padding:CGFloat = 5.0
-        var width:CGFloat = round(core.data.screenWidth * 0.20 - (padding * 2))
-        var height:CGFloat = round(core.data.screenHeight * heightPercent)
-        var myNode:SKSpriteNode = makeInfoPanel(width, height: height)
-        
-        var myPosition = convertPointFromView(theView.frame.origin)
-        
-        var y = myPosition.y - (height / 2) + 30
-        var x = CGFloat(core.data.screenWidth - (width / 2) - padding)
-        myNode.position = CGPointMake(x, y)
-        myNode.size = CGSizeMake(width, height)
-
-        return myNode
-    }
-    
-    func convert(point: CGPoint)->CGPoint {
-        return self.view!.convertPoint(CGPoint(x: point.x, y:self.view!.frame.height-point.y), toScene:self)
-    }
-    override func didMoveToView(view: SKView) {
-    }
-    
-    func newSpark() -> SKEmitterNode {
-        let sparkpath:NSString = NSBundle.mainBundle().pathForResource("MyParticle", ofType: "sks")!
-        let newspark = NSKeyedUnarchiver.unarchiveObjectWithFile(sparkpath as String) as! SKEmitterNode
-        return newspark
-    }
-    
-    func makeInfoPanel(width: CGFloat, height: CGFloat) -> SKSpriteNode {
-        let previewShape = SKShapeNode(rectOfSize: CGSize(width: width, height: height), cornerRadius:6)
-        previewShape.position = CGPoint(x:0, y:-3)
-        previewShape.fillColor = UIColor.whiteColor()
-        previewShape.strokeColor = UIColor.clearColor()
-        
-        let previewShape2 = SKShapeNode(rectOfSize: CGSize(width: width, height: height), cornerRadius:6)
-        previewShape2.position = CGPoint(x:0, y:0)
-        previewShape2.fillColor = UIColor.blackColor()
-        previewShape2.strokeColor = UIColor.clearColor()
-        
-        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:width - 8, height:height + 3))
-        previewNode.anchorPoint = CGPoint(x:0, y:1.0)
-        
-        previewNode.addChild(previewShape)
-        previewNode.addChild(previewShape2)
-
-        previewNode.zPosition = 10
-        return previewNode
+    func stopBackgroundMusic() {
+        if (core.data.musicPlayer!.playing) {
+            core.data.musicPlayer!.stop()
+        }
     }
     
     func preloadSounds(sounds: [String]) -> [String:SKAction] {
@@ -229,6 +183,44 @@ class GameScene: SKScene {
         }
         
         return cache
+    }
+    
+    func playSound(sound:String) {
+        if (core.data.prefs["soundeffects"] as! Bool == true) {
+            runAction(sounds[sound])
+        }
+    }
+    
+    func makeInfoPanel(width: CGFloat, height: CGFloat) -> SKSpriteNode {
+        let previewShape = SKShapeNode()
+        previewShape.path = UIBezierPath(roundedRect: CGRect(x:0, y:0, width: width, height: height), cornerRadius: 6).CGPath
+        previewShape.position = CGPoint(x:0, y:-3)
+        previewShape.fillColor = UIColor.whiteColor()
+        previewShape.strokeColor = UIColor.clearColor()
+        
+        let previewShape2 = SKShapeNode()
+        previewShape2.path = UIBezierPath(roundedRect: CGRect(x:0, y:0, width: width, height: height), cornerRadius: 6).CGPath
+        previewShape2.position = CGPoint(x:0, y:0)
+        previewShape2.fillColor = UIColor.blackColor()
+        previewShape2.strokeColor = UIColor.clearColor()
+        
+        let previewNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width:width - 8, height:height + 3))
+        previewNode.anchorPoint = CGPoint(x:0, y:1.0)
+        
+        previewNode.addChild(previewShape)
+        previewNode.addChild(previewShape2)
+        
+        previewNode.zPosition = 10
+        return previewNode
+    }
+    
+    func newSpark() -> SKEmitterNode {
+        let sparkpath:NSString = NSBundle.mainBundle().pathForResource("MyParticle", ofType: "sks")!
+        let newspark = NSKeyedUnarchiver.unarchiveObjectWithFile(sparkpath as String) as! SKEmitterNode
+        return newspark
+    }
+    
+    override func didMoveToView(view: SKView) {
     }
     
     override func update(currentTime: CFTimeInterval) {
@@ -243,12 +235,6 @@ class GameScene: SKScene {
         }
     }
 
-    func playSound(sound:String) {
-        if (core.data.prefs["soundeffects"] as! Bool == true) {
-            runAction(sounds[sound])
-        }
-    }
-    
     func startTicking() {
         lastTick = NSDate()
     }
@@ -258,33 +244,35 @@ class GameScene: SKScene {
     }
     
     func pointForColumn(column: Int, row: Int) -> CGPoint {
-        let x: CGFloat = LayerPosition.x + (CGFloat(column) * BlockSize) + (BlockSize / 2)
-        let y: CGFloat = LayerPosition.y - ((CGFloat(row) * BlockSize) + (BlockSize / 2))
+        let x: CGFloat = LayerPosition.x + (CGFloat(column) * BlockSize)
+        let y: CGFloat = LayerPosition.y - (CGFloat(row) * BlockSize) - BlockSize
         return CGPointMake(x, y)
     }
     
     func addPreviewShapeToScene(shape:Shape, completion:() -> ()) {
         let blockRowColumnTranslations = shape.blockRowColumnPositions[shape.orientation]
-        var destX = LayerPosition.x + (CGFloat(shape.column) * BlockSize) + (BlockSize / 2)
-        var destY = LayerPosition.y + (CGFloat(shape.row - 1) * BlockSize) + (BlockSize / 2)
+        var destX = LayerPosition.x + (CGFloat(shape.preview) * BlockSize) + (BlockSize / 2)
+        var destY = LayerPosition.y + (CGFloat(shape.row) * BlockSize) - (BlockSize / 2)
 
         for (idx, block) in enumerate(shape.blocks) {
             var CGBlockSize = CGSize(width: BlockSize, height: BlockSize)
-            let sprite = SKShapeNode(rectOfSize: CGBlockSize, cornerRadius: 4.0)
-            
+            let sprite = SKShapeNode()
+            sprite.path = UIBezierPath(roundedRect: CGRectMake(0, 0, BlockSize, BlockSize), cornerRadius: 5).CGPath
             sprite.fillColor = block.spriteColor
             
             sprite.strokeColor = UIColor.darkGrayColor()
-            sprite.position = pointForColumn(block.column, row:block.row - 1)
+            sprite.lineWidth = 1
+            sprite.position = pointForColumn(NumColumns, row:1)
             
             var myletter = SKLabelNode(fontNamed: "AvenirNext-Bold");
             myletter.text = block.letter
+            
             //       original = 22
             //                  28
             myletter.fontSize = self.size.height * 0.039 // 35
             //                          x:-1.5, y:-8
             //
-            myletter.position = CGPoint(x:-self.size.height * 0.0026, y:-self.size.height * 0.015)
+            myletter.position = CGPoint(x:self.size.height * 0.026, y:self.size.height * 0.015)
             myletter.fontColor = SKColor.blackColor()
             
             sprite.addChild(myletter)
@@ -296,7 +284,7 @@ class GameScene: SKScene {
             myvalue.fontSize = self.size.height * 0.013 // 15
             //                         x:8.75, y:-12.5
             //                         x:12,   y:-15
-            myvalue.position = CGPoint(x:self.size.height * 0.016, y:-self.size.height * 0.022)
+            myvalue.position = CGPoint(x:self.size.height * 0.045, y:3)
             myvalue.fontColor = SKColor.blackColor()
             
             sprite.addChild(myvalue)
@@ -312,20 +300,20 @@ class GameScene: SKScene {
             var newY = destY
             
             if let colDiff = blockRowColumnTranslations?[idx].0 {
-                newX = CGFloat(newX) + (CGFloat(colDiff) * CGFloat(BlockSize / 2)) + 4 + (BlockSize / 2)
+                newX = CGFloat(newX) + (CGFloat(colDiff) * CGFloat(BlockSize / 2)) + (BlockSize / 2)
             }
             
             if let rowDiff = blockRowColumnTranslations?[idx].1 {
                 newY = CGFloat(newY) + (CGFloat(rowDiff) * CGFloat(BlockSize / 2)) - 10
             }
             
-            let moveAction = SKAction.moveTo(CGPointMake(newX, -newY), duration: NSTimeInterval(0.5))
+            let moveAction = SKAction.moveTo(CGPointMake(newX, -newY), duration: NSTimeInterval(0.2))
             moveAction.timingMode = .EaseOut
     
             let scaleAction = SKAction.scaleTo(0.5, duration: NSTimeInterval(0.5))
             scaleAction.timingMode = .EaseOut
             
-            let fadeInAction = SKAction.fadeAlphaTo(1.0, duration: 0.5)
+            let fadeInAction = SKAction.fadeAlphaTo(1.0, duration: 0.15)
             fadeInAction.timingMode = .EaseOut
             
             sprite.runAction(SKAction.group([moveAction, scaleAction, fadeInAction]))
@@ -334,6 +322,9 @@ class GameScene: SKScene {
     }
     
     func movePreviewShape(shape:Shape, completion:() -> ()) {
+        shape.column = shape.start
+        shape.repositionBlocks(shape.column, row:shape.row)
+       
         for (idx, block) in enumerate(shape.blocks) {
             let sprite = block.sprite!
             let moveTo = pointForColumn(block.column, row:block.row)
@@ -341,7 +332,7 @@ class GameScene: SKScene {
             let scaleToAction = SKAction.scaleTo(1.0, duration: NSTimeInterval(0.2))
             moveToAction.timingMode = .EaseOut
             sprite.runAction(
-                SKAction.group([moveToAction, scaleToAction, SKAction.fadeAlphaTo(1.0, duration: NSTimeInterval(0.2))]), completion:nil)
+                SKAction.group([moveToAction, scaleToAction]), completion:nil)
         }
         runAction(SKAction.waitForDuration(0.2), completion: completion)
     }
@@ -359,7 +350,7 @@ class GameScene: SKScene {
     
     func animateLevelUp(level:Int) {
         let banner = SKSpriteNode()
-        banner.position = pointForColumn(4, row:7)
+        banner.position = pointForColumn((NumColumns / 2) + 1, row:7)
         
         var myword = SKLabelNode(fontNamed: "AvenirNext-Bold");
         myword.text = "LEVEL \(level)"
@@ -380,7 +371,7 @@ class GameScene: SKScene {
         actions.append(SKAction.scaleTo(6.0, duration: NSTimeInterval(3)))
         
         let group = SKAction.group(actions);
-        banner.runAction(SKAction.sequence([SKAction.scaleTo(2.0, duration: NSTimeInterval(1)), SKAction.waitForDuration(delay), group]))
+        banner.runAction(SKAction.sequence([SKAction.scaleTo(2.0, duration: NSTimeInterval(1)), SKAction.waitForDuration(delay), group, SKAction.removeFromParent()]))
     }
     
     func animateFoundWords(queuedBlocks:[(String,Int,Array<Block>)]) {
@@ -426,7 +417,7 @@ class GameScene: SKScene {
                         SKAction.group([
                             SKAction.scaleTo(3.0, duration: NSTimeInterval(1)),
                             SKAction.colorizeWithColor(SKColor.whiteColor(), colorBlendFactor: 1.0, duration: NSTimeInterval(1))]),
-                        group]))
+                        group, SKAction.removeFromParent()]))
             
             
         }
