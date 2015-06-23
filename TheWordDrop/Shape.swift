@@ -54,6 +54,8 @@ class Shape: Hashable, Printable {
     var orientation: Orientation
     // The column and row representing the shape's anchor point
     var column, row:Int
+    var start, preview:Int
+    var id:String
     
     // Required Overrides
     // #1
@@ -90,7 +92,10 @@ class Shape: Hashable, Printable {
         self.column = column
         self.row = row
         self.orientation = orientation
-        
+        self.preview = PreviewColumn
+        self.start = column
+        self.id = NSUUID().UUIDString
+
         initializeBlocks()
     }
     
@@ -106,6 +111,17 @@ class Shape: Hashable, Printable {
                 let blockColumn = column + blockRowColumnTranslations[i].columnDiff
                 let newBlock = Block(column: blockColumn, row: blockRow, color: BlockColor.random())
                 blocks.append(newBlock)
+            }
+        }
+    }
+    
+    final func repositionBlocks(column:Int, row:Int) {
+        if let blockRowColumnTranslations = blockRowColumnPositions[orientation] {
+            for i in 0..<blockRowColumnTranslations.count {
+                let blockRow = row + blockRowColumnTranslations[i].rowDiff
+                let blockColumn = column + blockRowColumnTranslations[i].columnDiff
+                blocks[i].row = blockRow
+                blocks[i].column = blockColumn
             }
         }
     }
@@ -164,33 +180,52 @@ class Shape: Hashable, Printable {
     }
     
     final class func random(startingColumn:Int, startingRow:Int, level:UInt32) -> Shape {
-        var cnt: UInt32 = level < NumShapeTypes ? level : NumShapeTypes
+        var tmpskill = core.data.prefs["skill"] as! Int
+        var skill = UInt32(tmpskill - 1)
+        //println("Skill: \(skill)")
+        var cnt: UInt32 = level + (skill * 1) < NumShapeTypes ? level + skill : NumShapeTypes
         
-        // var startColumn = Int(arc4random_uniform(9))
+        var startColumn = Int(arc4random_uniform(UInt32(NumColumns - 2))) + 1
          // cnt = 9
-        switch Int(arc4random_uniform(cnt)) {
+        var list = [UInt32](), mult = 2
+        
+        for (var i=cnt; i>0; i--) {
+            for x in 0...mult {
+                list.append(i)
+            }
+            mult *= 2
+        }
+        
+        var pad = Array(count: mult + 10, repeatedValue: UInt32(0))
+        list += pad
+            
+        //println("list: \(list)")
+        var p = Int(arc4random_uniform(UInt32(list.count)))
+        var pick = Int(list[p])
+//        switch Int(arc4random_uniform(cnt)) {
+        switch pick {
         case 0:
-            return SingleShape(column:startingColumn, row:startingRow)
+            return SingleShape(column:startColumn, row:startingRow)
         case 1:
-            return DoubleShape(column:startingColumn, row:startingRow)
+            return DoubleShape(column:startColumn, row:startingRow)
         case 2:
-            return TripleShape(column:startingColumn, row:startingRow)
+            return TripleShape(column:startColumn, row:startingRow)
         case 3:
-            return LineShape(column:startingColumn, row:startingRow)
+            return LineShape(column:startColumn, row:startingRow)
         case 4:
-            return TShape(column:startingColumn, row:startingRow)
+            return TShape(column:startColumn, row:startingRow)
         case 5:
-            return JShape(column:startingColumn, row:startingRow)
+            return JShape(column:startColumn, row:startingRow)
         case 6:
-            return LShape(column:startingColumn, row:startingRow)
+            return LShape(column:startColumn, row:startingRow)
         case 7:
-            return SShape(column:startingColumn, row:startingRow)
+            return SShape(column:startColumn, row:startingRow)
         case 8:
-            return SquareShape(column:startingColumn, row:startingRow)
+            return SquareShape(column:startColumn, row:startingRow)
         case 9:
-            return ZShape(column:startingColumn, row:startingRow)
+            return ZShape(column:startColumn, row:startingRow)
         default:
-            return SingleShape(column:startingColumn, row:startingRow)
+            return SingleShape(column:startColumn, row:startingRow)
         }
     }
 }

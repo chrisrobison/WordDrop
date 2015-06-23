@@ -188,6 +188,9 @@
             word += tile.letter
         }
         
+        var lengthBonus = 3 - tiles.count
+        points = points + (lengthBonus * points)
+        
         if bonus > 0 {
             points = points * bonus
         }
@@ -199,6 +202,25 @@
         return points
     }
     
+    func dumpGrid() {
+        var grid = ""
+        for row in 0...NumRows - 1 {
+            var rowStr = ""
+            for col in 0...NumColumns - 1 {
+                if let block = blockArray[col, row] {
+                    var val = block.letter
+                    rowStr += val
+                } else {
+                    rowStr += "."
+                }
+            }
+            rowStr += "\n"
+            grid += rowStr
+        }
+        grid += "-----------------------\n\n"
+        // println(grid)
+    }
+    
     func removeCompletedWords() -> (tilesRemoved: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>) {
         var removedTiles = Array<Array<Block>>(),
             tiles = Array<Block>(),
@@ -206,10 +228,10 @@
             fallenBlocks = Array<Array<Block>>(),
             queuedBlocks:[(String,Int,Array<Block>)] = [],
             foundWords:[String],
-        colsOfBlocks = Array<Array<Block?>>(count:NumRows, repeatedValue: Array<Block?>()),
+            colsOfBlocks = Array<Array<Block?>>(count:NumRows, repeatedValue: Array<Block?>()),
             colStrings = Array<String>(count: NumColumns, repeatedValue:""),
             bombs = [Block?]()
-
+dumpGrid()
         for var row = NumRows - 1; row > 0; row-- {
             var rowOfBlocks = Array<Block?>(),
                 rowString = "",
@@ -287,31 +309,47 @@
         
         core.data.queuedBlocks += queuedBlocks
         var fallenBlocksArray = Array<Block>()
-        
-        for tileQueue in removedTiles {
-           /* for tile in tileQueue {
-                blockArray[tile.column, tile.row] = nil
-            }
-            */
-            
-            for tile in tileQueue {
-                blockArray[tile.column, tile.row] = nil
+        var removedAlready = [String:Bool]()
 
-                for var row = tile.row - 1; row > 0; row-- {
-                    if let block = blockArray[tile.column, row] {
-                        var newRow = row
-                        while (newRow < NumRows - 1 && blockArray[tile.column, newRow + 1] == nil) {
-                            newRow++
-                        }
+        var tilesRemoved = Array<Block>()
+        
+        // Flatten found word tiles from removedTiles array
+        for tileQueue in removedTiles {
+            for tile in tileQueue {
+                if (removedAlready[tile.id] == nil) {
+                    tilesRemoved.append(tile)
+                }
+                removedAlready[tile.id] = true
+            }
+        }
+        
+        // Clear tiles from playfield array
+        for tile in tilesRemoved {
+            blockArray[tile.column, tile.row] = nil
+        }
+        
+        // Move any tile above cleared spaces down
+        for tile in tilesRemoved {
+            for var row = tile.row - 1; row > 0; row-- {
+                if let block = blockArray[tile.column, row] {
+                    var newRow = row
+                    while (newRow < NumRows - 1 && blockArray[tile.column, newRow + 1] == nil) {
+                        newRow++
+                    }
+                    // Only reassign block if it actually moved!
+                    if (newRow != row) {
+                        //println("Moving block \(block) from row \(block.row) to \(newRow)")
                         block.row = newRow
                         blockArray[tile.column, row] = nil
                         blockArray[tile.column, newRow] = block
                         fallenBlocksArray.append(block)
+                    } else {
+                        //println("Not moving block \(block).  Same position.")
                     }
                 }
-                fallenBlocks.append(fallenBlocksArray)
             }
-        }
+            fallenBlocks.append(fallenBlocksArray)
+         }
         
         fallenBlocksArray.removeAll()
         fallenBlocksArray = clearFloatingBlocks()
@@ -346,10 +384,12 @@
                         while (newRow < NumRows - 1 && blockArray[column, newRow + 1] == nil) {
                             newRow++
                         }
-                        block.row = newRow
-                        blockArray[column, row] = nil
-                        blockArray[column, newRow] = block
-                        fallenBlocksArray.append(block)
+                        if newRow != row {
+                            block.row = newRow
+                            blockArray[column, row] = nil
+                            blockArray[column, newRow] = block
+                            fallenBlocksArray.append(block)
+                        }
                     }
                 }
             }
@@ -362,7 +402,7 @@
         for bomb in bombs {
             sayWord("kah boom! boom! boom!")
             tmpblocks.append(bomb!)
-            if bomb!.column > 1 {
+            if bomb!.column >= 1 {
                 if blockArray[bomb!.column - 1, bomb!.row] != nil {
                     tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row]!)
                 }

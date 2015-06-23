@@ -87,6 +87,8 @@ class Block: Hashable, Printable {
     var spriteColor: UIColor {
             return color.spriteColor
     }
+    var id:String
+    
     var spriteName: String {
         return color.spriteName
     }
@@ -101,11 +103,29 @@ class Block: Hashable, Printable {
     
     var textureCache = Dictionary<String, SKTexture>()
 
-    init(column:Int, row:Int, color:BlockColor) {
+    init(column:Int, row:Int, color:BlockColor, letter:String) {
         self.column = column
         self.row = row
         self.color = color
-        self.letter = core.data.getLetter()
+        self.letter = letter
+        self.id = NSUUID().UUIDString
+    }
+    
+    convenience init(column:Int, row:Int, color:BlockColor) {
+        var letter = core.data.getLetter()
+        self.init(column: column, row:row, color:color, letter:letter)
+    }
+
+    convenience init(column:Int, row:Int, letter:String) {
+        var letter = letter
+        var color = BlockColor.random()
+        self.init(column: column, row:row, color:color, letter:letter)
+    }
+    
+    convenience init(column:Int, row:Int) {
+        var letter = core.data.getLetter()
+        var color = BlockColor.random()
+        self.init(column:column, row:row, color:color, letter:letter)
     }
 }
 

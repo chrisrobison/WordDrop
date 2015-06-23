@@ -22,6 +22,18 @@ class OptionsMenuViewController: UIViewController {
     @IBAction func bgmusicAction(sender: UISwitch) {
         core.data.prefs["bgmusic"] = sender.on
         saveSwitchesStates()
+        
+        if (core.data.musicPlayer != nil) {
+            if (sender.on) {
+                if (!core.data.musicPlayer!.playing) {
+                    core.data.musicPlayer!.play()
+                }
+            } else {
+                if (core.data.musicPlayer!.playing) {
+                    core.data.musicPlayer!.stop()
+                }
+            }
+        }
     }
     
     @IBAction func speakAction(sender: UISwitch) {
@@ -58,14 +70,14 @@ class OptionsMenuViewController: UIViewController {
     
     func restoreSwitchesStates() {
         var firstRun : Bool? = !NSUserDefaults.standardUserDefaults().boolForKey("firstrun")
-        println("firstRun: \(firstRun)")
+        //println("firstRun: \(firstRun)")
         var bgmusicState : Bool? = NSUserDefaults.standardUserDefaults().boolForKey("bgmusic")
         if firstRun! || bgmusicState == nil {
             bgmusicState = true
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "bgmusic")
             core.data.prefs["bgmusic"] = true
         }
-        println("bgmusic: \(bgmusicState)")
+        //println("bgmusic: \(bgmusicState)")
         bgmusic!.on = bgmusicState!
         
         var speakState : Bool? = NSUserDefaults.standardUserDefaults().boolForKey("speak")
@@ -74,7 +86,7 @@ class OptionsMenuViewController: UIViewController {
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "speak")
             core.data.prefs["speak"] = true
         }
-        println("speak: \(speakState)")
+        //println("speak: \(speakState)")
         
         speak!.on = speakState!
         
@@ -84,7 +96,7 @@ class OptionsMenuViewController: UIViewController {
             NSUserDefaults.standardUserDefaults().setBool(true, forKey: "soundeffects")
             core.data.prefs["soundeffects"] = true
         }
-        println("soundeffects: \(effectsState)")
+        //println("soundeffects: \(effectsState)")
         soundeffects!.on = effectsState!
         
         var skillState : Int? = NSUserDefaults.standardUserDefaults().integerForKey("skill")
@@ -93,7 +105,7 @@ class OptionsMenuViewController: UIViewController {
             NSUserDefaults.standardUserDefaults().setInteger(1, forKey: "skill")
             core.data.prefs["skill"] = 1
         }
-        println("skill: \(skillState)")
+        //println("skill: \(skillState)")
         skill!.selectedSegmentIndex = skillState!
         NSUserDefaults.standardUserDefaults().setBool(true, forKey: "firstrun")
         NSUserDefaults.standardUserDefaults().synchronize()

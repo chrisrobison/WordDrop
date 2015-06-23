@@ -7,6 +7,11 @@
 		<key>Swiftris.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>TheWordDrop Dev.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
 		<key>TheWordDrop.xcscheme</key>

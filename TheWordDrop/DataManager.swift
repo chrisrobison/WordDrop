@@ -35,7 +35,8 @@ class DataManager {
         scoreLabel:UILabel?,
         lastWord:UILabel?,
         prefs = [String:AnyObject](),
-        musicPlayer:AVAudioPlayer?
+        musicPlayer:AVAudioPlayer?,
+        paused:Bool = false
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",
@@ -80,7 +81,7 @@ class DataManager {
             return([], [])
         }
         // =========DEBUG========= //
-        println("Found \(found.count) words: \(found)")
+        //println("Found \(found.count) words: \(found)")
 
         var longest = found[0]
         if found.count > 1 {

@@ -56,7 +56,7 @@ class GameScene: SKScene {
             self.BlockSize = 28
         }
         
-        println("BlockSize: \(BlockSize)")
+        //println("BlockSize: \(BlockSize)")
         
         self.anchorPoint = CGPointMake(0, 0)
         //self.BlockSize = self.size.width / 10
@@ -149,7 +149,7 @@ class GameScene: SKScene {
 
         // runAction(SKAction.repeatActionForever(SKAction.playSoundFileNamed("theme.mp3", waitForCompletion: true)))
         self.playBackgroundMusic()
-        self.sounds = preloadSounds(["bomb.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
+        self.sounds = preloadSounds(["bomb2.mp3","drop.mp3","gameover.mp3","levelup.mp3"])
         
     }
 
@@ -166,13 +166,13 @@ class GameScene: SKScene {
         }
         if core.data.prefs["bgmusic"] as! Bool == true {
             core.data.musicPlayer!.play()
+        } else {
+            core.data.musicPlayer!.stop()
         }
     }
     
     func stopBackgroundMusic() {
-        if (core.data.musicPlayer!.playing) {
-            core.data.musicPlayer!.stop()
-        }
+        core.data.musicPlayer!.stop()
     }
     
     func preloadSounds(sounds: [String]) -> [String:SKAction] {
@@ -423,6 +423,14 @@ class GameScene: SKScene {
         }
     }
     
+    func CDRwait(duration: Double) -> SKAction {
+        return SKAction.waitForDuration(NSTimeInterval(duration))
+    }
+    
+    func CDRfade(duration: Double) -> SKAction {
+        return SKAction.fadeOutWithDuration(NSTimeInterval(duration))
+    }
+    
     func animateCollapsingLines(tilesToRemove: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>, completion:() -> ()) {
         var longestDuration: NSTimeInterval = 0
         
@@ -431,11 +439,11 @@ class GameScene: SKScene {
                 let newPosition = pointForColumn(block.column, row: block.row)
                 let sprite = block.sprite!
                 
-                let delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.1)
-                let duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.1)
+                var delay = (NSTimeInterval(columnIdx) * 0.05) + (NSTimeInterval(blockIdx) * 0.1)
+                var duration = NSTimeInterval(((sprite.position.y - newPosition.y) / BlockSize) * 0.1)
                 let moveAction = SKAction.moveTo(newPosition, duration: duration)
                 
-                //println("Dropping block - delay:\(delay) duration:\(duration)")
+                //println("Dropping block - block:\(block) duration:\(duration)")
                 
                 moveAction.timingMode = .EaseOut
                 sprite.runAction(
@@ -455,7 +463,7 @@ class GameScene: SKScene {
                 var point = pointForColumn(block.column, row: block.row)
                 point = CGPointMake(point.x + (goLeft ? -randomRadius : randomRadius), point.y)
                 
-                let randomDuration = NSTimeInterval(arc4random_uniform(2)) + 0.75
+                let randomDuration = NSTimeInterval(arc4random_uniform(3)) + 0.75
                 // #5
                 var startAngle = CGFloat(M_PI)
                 var endAngle = startAngle * 2
@@ -476,23 +484,30 @@ class GameScene: SKScene {
                 
                 sprite.parent!.addChild(xplode)
                 
-                xplode.runAction(
-                    SKAction.sequence(  [
-                            SKAction.waitForDuration(NSTimeInterval(1.5)),
-                            SKAction.fadeOutWithDuration(NSTimeInterval(0.5)),
+                var delay = (NSTimeInterval(block.column) * 0.05) + (NSTimeInterval(blockIdx) * 0.1)
+                var scale = SKAction.scaleBy(CGFloat(1 + (LetterValues[block.letter]! / 10)), duration: NSTimeInterval(0.5))
+                
+                var explactions = [ CDRwait(0.75 + delay), CDRfade(0.5), SKAction.removeFromParent()]
+                
+                xplode.runAction(SKAction.group([scale, SKAction.sequence(explactions)]))
+                
+                sprite.zPosition = 25
+                sprite.runAction(
+                    SKAction.sequence(
+                        [
+                            SKAction.group(
+                                [
+                                    archAction,
+                                    CDRfade(randomDuration)
+                                ]
+                            ),
                             SKAction.removeFromParent()
                         ]
                     )
                 )
-                // #6
-                sprite.zPosition = 25
-                sprite.runAction(
-                    SKAction.sequence(
-                        [SKAction.group([archAction, SKAction.fadeOutWithDuration(NSTimeInterval(randomDuration))]),
-                            SKAction.removeFromParent()]))
             }
         }
-        // #7
+    
         runAction(SKAction.waitForDuration(longestDuration), completion:completion)
     }
 }

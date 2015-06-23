@@ -26,6 +26,7 @@ class StartMenuViewController: UIViewController {
     @IBOutlet weak var optionsBtn: UIButton!
     @IBOutlet weak var helpBtn: UIButton!
     @IBOutlet weak var aboutBtn: UIButton!
+    @IBOutlet weak var buttonsView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,9 +48,10 @@ class StartMenuViewController: UIViewController {
         aboutBtn.layer.borderColor = UIColor.clearColor().CGColor
         
         adjustFontsForScreenSize()
+        
         // Do any additional setup after loading the view.
     }
-
+    
     func adjustFontsForScreenSize() {
         var fontAdjustment = 0
         var screenSize = UIScreen.mainScreen().bounds.size
