@@ -36,9 +36,6 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     let silentIcon = UIImage(named: "silent")
     let exitIcon = UIImage(named: "exit")
     
-        //flipHorizontalWithDuration(NSTimeInterval(3.0))
-//        moveInWithDirection(.Down, duration: NSTimeInterval(3.0))
-        // revealWithDirection(SKTransitionDirection.Down, duration: 2.0)
     var skView:SKView!, pauseView:SKView!
     
     @IBOutlet weak var scoreLabel: UILabel!
@@ -53,23 +50,18 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     @IBOutlet weak var scorePanel: UIView!
     @IBOutlet weak var wordsLabel: UILabel!
     @IBAction func settingsButton(sender: UIButton) {
-        let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 1.0)
-
         if (core.data.paused == true) {
             core.data.paused = false
             skView.scene?.paused = false
             gameScene.playBackgroundMusic()
             gameScene.startTicking()
             dismissAlert()
-            
-            // skView!.presentScene(gameScene, transition:transition)
         } else {
             core.data.paused = true
             gameScene.stopBackgroundMusic()
             gameScene.stopTicking()
             showAlert()
             skView.scene?.paused = true
-            // skView!.presentScene(pausedScene, transition:transition)
         }
     }
     
@@ -89,11 +81,6 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         
         animator = UIDynamicAnimator(referenceView: view)
 
-        pausedView = SKView(frame: skView.frame)
-        pausedScene = PauseScene(size: skView.bounds.size)
-        pausedScene.scaleMode = .AspectFill
-        pausedView.presentScene(pausedScene)
-        
         gameScene = GameScene(size: skView.bounds.size)
         gameScene.scaleMode = .AspectFill
         scene = gameScene
@@ -276,11 +263,11 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
             dismissAlert()
             core.data.paused = false
             skView.scene?.paused = false
-            gameScene.startTicking()
+            gameScene.stopTicking()
             gameScene.stopBackgroundMusic()
-            
+            self.performSegueWithIdentifier("gameoverSegue", sender: self)
             //println("speak icon tapped.")
-            self.gameDidEnd(theworddrop)
+            //self.gameDidEnd(theworddrop)
         }
     }
     
@@ -532,10 +519,9 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         core.data.musicPlayer!.stop()
         gameScene.playSound("gameover.mp3")
         gameScene.animateCollapsingLines(theworddrop.removeAllBlocks(), fallenBlocks: Array<Array<Block>>()) {
-            // self.showStart()
             self.gameScene.stopBackgroundMusic()
             let startViewController = self.storyboard!.instantiateViewControllerWithIdentifier("StartMenuViewController") as! StartMenuViewController
-            self.performSegueWithIdentifier("StartSegue", sender: self)
+            self.performSegueWithIdentifier("gameoverSegue", sender: self)
             // self.presentViewController(startViewController, animated: true, completion: nil)
         }
     }
@@ -546,10 +532,10 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         
         gameScene.animateLevelUp(Int(theworddrop.level))
         
-        if gameScene.tickLengthMillis >= 100 {
-            gameScene.tickLengthMillis -= 50
-        } else if gameScene.tickLengthMillis > 0 {
+        if gameScene.tickLengthMillis >= 10 {
             gameScene.tickLengthMillis -= 10
+        } else if gameScene.tickLengthMillis > 0 {
+            gameScene.tickLengthMillis -= 1
         } else {
             gameScene.tickLengthMillis = 1
         }

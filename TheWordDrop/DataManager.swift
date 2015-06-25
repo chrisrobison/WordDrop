@@ -36,7 +36,13 @@ class DataManager {
         lastWord:UILabel?,
         prefs = [String:AnyObject](),
         musicPlayer:AVAudioPlayer?,
-        paused:Bool = false
+        paused:Bool = false,
+        foundWords = [String](),
+        foundPoints = [Int](),
+        foundBonus = [String](),
+        totalTiles:Int = 0,
+    score:Int = 0
+    
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",

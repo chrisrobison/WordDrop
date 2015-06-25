@@ -109,6 +109,7 @@ class Block: Hashable, Printable {
         self.color = color
         self.letter = letter
         self.id = NSUUID().UUIDString
+        core.data.totalTiles++
     }
     
     convenience init(column:Int, row:Int, color:BlockColor) {

@@ -181,7 +181,7 @@ class Shape: Hashable, Printable {
     
     final class func random(startingColumn:Int, startingRow:Int, level:UInt32) -> Shape {
         var tmpskill = core.data.prefs["skill"] as! Int
-        var skill = UInt32(tmpskill - 1)
+        var skill = UInt32(tmpskill)
         //println("Skill: \(skill)")
         var cnt: UInt32 = level + (skill * 1) < NumShapeTypes ? level + skill : NumShapeTypes
         

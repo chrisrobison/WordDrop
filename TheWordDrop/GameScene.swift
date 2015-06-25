@@ -9,7 +9,7 @@
 import SpriteKit
 import AVFoundation
 
-let TickLengthLevelOne = NSTimeInterval(600 - (core.data.level * 50))
+let TickLengthLevelOne = NSTimeInterval(700 - (core.data.prefs["skill"] as! Double  * 50))
 
 extension String {
     func toBool() -> Bool? {

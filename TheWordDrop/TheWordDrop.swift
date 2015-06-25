@@ -77,6 +77,14 @@
     }
     
     func beginGame() {
+        core.data.score = 0
+        score = 0
+        core.data.level = 1
+        level = 1
+        core.data.foundPoints.removeAll()
+        core.data.foundWords.removeAll()
+        core.data.foundBonus.removeAll()
+        
         if (nextShape == nil) {
             nextShape = Shape.random(PreviewColumn, startingRow: PreviewRow, level: level)
         }
@@ -144,9 +152,9 @@
     }
     
     func endGame() {
-        score = 0
-        level = 1
-        core.data.level = 1
+        // score = 0
+        // level = 1
+        // core.data.level = 1
         
         delegate?.gameDidEnd(self)
     }
@@ -159,7 +167,7 @@
     *
     */
     final func calculatePoints(tiles:Array<Block>) -> Int {
-        var points = 0, val = 0, bonus:Int = 0, word = "", out = "", wordBonuses = [Int]()
+        var points = 0, val = 0, bonus:Int = 0, word = "", out = "", wordBonuses = [Int](), bonuses = [String](), bonusString=""
         
         for tile in tiles {
             var val = LetterValues[tile.letter]!
@@ -167,18 +175,24 @@
             switch tile.color {
             case .Blue:         // 2L
                 val = val * 2
+                bonuses.append("\(tile.letter)x2")
             case .Orange:       // 3L
                 val = val * 3
+                bonuses.append("\(tile.letter)x3")
             case .Purple:       // 4L
                 val = val * 4
+                bonuses.append("\(tile.letter)x4")
             case .Red:          // 2W
                 wordBonuses.append(2)
+                bonuses.append("2W")
                 bonus += 2
             case .Teal:         // 3W
                 wordBonuses.append(3)
+                bonuses.append("3W")
                 bonus += 3
             case .Yellow:       // 4W
                 wordBonuses.append(4)
+                bonuses.append("4W")
                 bonus += 4
             case .Grey:         // No bonus
                 val = val + 0
@@ -188,15 +202,18 @@
             word += tile.letter
         }
         
-        var lengthBonus = 3 - tiles.count
-        points = points + (lengthBonus * points)
-        
         if bonus > 0 {
             points = points * bonus
         }
         
-        out = "\(word) +\(points)"
+        var lengthBonus = (tiles.count - 2) * points
+        points +=  lengthBonus
         
+        out = "\(word) +\(points)"
+        var plus = "+"
+        bonusString = plus.join(bonuses)
+        
+        core.data.foundBonus.append(bonusString)
         lastWords.append(out)
 
         return points
@@ -264,10 +281,12 @@ dumpGrid()
                     removedTiles.append(tiles)
                     lastPoint = calculatePoints(tiles)
                     score += lastPoint
-
+                    core.data.score = score
                     let tup = (foundWords[0], lastPoint, tiles)
                     
                     queuedBlocks.append(tup)
+                    core.data.foundWords.append(foundWords[0])
+                    core.data.foundPoints.append(lastPoint)
                     
                     sayWord(foundWords[0])
                 }
@@ -285,11 +304,14 @@ dumpGrid()
                 removedTiles.append(tiles)
                 lastPoint = calculatePoints(tiles)
                 score += lastPoint
-                    
+                core.data.score = score
+                
                 let tup = (foundWords[0], lastPoint, tiles)
                 
                 queuedBlocks.append(tup)
-                
+                core.data.foundWords.append(foundWords[0])
+                core.data.foundPoints.append(lastPoint)
+
                 sayWord(foundWords[0])
             }
         }
@@ -400,7 +422,6 @@ dumpGrid()
     func explodeBomb(bombs:Array<Block?>) -> Array<Block> {
         var tmpblocks = Array<Block>()
         for bomb in bombs {
-            sayWord("kah boom! boom! boom!")
             tmpblocks.append(bomb!)
             if bomb!.column >= 1 {
                 if blockArray[bomb!.column - 1, bomb!.row] != nil {
@@ -443,6 +464,10 @@ dumpGrid()
                 }
             }
         }
+        var booms = [String](count: tmpblocks.count, repeatedValue: "boom! ")
+        var sayboom = "kah " + join("", booms)
+        sayWord(sayboom)
+        
         return tmpblocks
     }
     
