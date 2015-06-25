@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "speak-32.png"
+      "filename" : "nobg-32.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "speak-64.png"
+      "filename" : "nobg-64.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "speak-128.png"
+      "filename" : "nobg-128.png"
     }
   ],
   "info" : {
