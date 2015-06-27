@@ -1290,7 +1290,7 @@ list game about over drop fall blocks shape help scene score
         <image name="startup-bg.png" width="1242" height="2208"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="naB-G6-WE0"/>
         <segue reference="0lK-zc-5y4"/>
+        <segue reference="siM-kV-voe"/>
     </inferredMetricsTieBreakers>
 </document>

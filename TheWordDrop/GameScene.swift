@@ -156,13 +156,19 @@ class GameScene: SKScene {
     func playBackgroundMusic() {
         
         if core.data.musicPlayer == nil {
-            var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
+            var bgMIDIPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mid")!
+            var midi = AVMIDIPlayer(contentsOfURL: bgMIDIPath, soundBankURL: nil, error: nil)
+            if midi == nil {
+                    println("AVMIDIPlayer failed")
+            }
+            midi.play(nil)
+            // var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
         
-            var error: NSError?
-            core.data.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
-            core.data.musicPlayer!.volume = 0.5
-            core.data.musicPlayer!.numberOfLoops = -1
-            core.data.musicPlayer!.prepareToPlay()
+            // var error: NSError?
+            // core.data.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
+            // core.data.musicPlayer!.volume = 0.5
+            // core.data.musicPlayer!.numberOfLoops = -1
+            // core.data.musicPlayer!.prepareToPlay()
         }
         if core.data.prefs["bgmusic"] as! Bool == true {
             core.data.musicPlayer!.play()
