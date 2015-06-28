@@ -200,7 +200,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         exitIV.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "exitTap:"))
         exitIV.userInteractionEnabled = true
         var exitLabel = UILabel()
-        exitLabel.text = "Quit back to Main Menu"
+        exitLabel.text = "Quit Game"
         exitLabel.font = UIFont(name: "Helvetica Neue", size: 12.0)
         exitLabel.frame = CGRectMake(0.0, (alertHeight - 30), alertWidth, 20)
         exitLabel.textAlignment = NSTextAlignment.Center
