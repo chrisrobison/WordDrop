@@ -235,7 +235,7 @@
             grid += rowStr
         }
         grid += "-----------------------\n\n"
-        // println(grid)
+        //println(grid)
     }
     
     func removeCompletedWords() -> (tilesRemoved: Array<Array<Block>>, fallenBlocks: Array<Array<Block>>) {
@@ -248,7 +248,7 @@
             colsOfBlocks = Array<Array<Block?>>(count:NumRows, repeatedValue: Array<Block?>()),
             colStrings = Array<String>(count: NumColumns, repeatedValue:""),
             bombs = [Block?]()
-dumpGrid()
+
         for var row = NumRows - 1; row > 0; row-- {
             var rowOfBlocks = Array<Block?>(),
                 rowString = "",
@@ -473,7 +473,7 @@ dumpGrid()
     
     func sayWord(word:String) {
         if core.data.prefs["speak"] as! Bool == true {
-            myUtterance = AVSpeechUtterance(string: word)
+            myUtterance = AVSpeechUtterance(string: word.lowercaseString)
             myUtterance!.rate = 0.3
             synth.speakUtterance(myUtterance)
         }
