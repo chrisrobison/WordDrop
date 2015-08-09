@@ -187,16 +187,17 @@ class Shape: Hashable, Printable {
         
         var startColumn = Int(arc4random_uniform(UInt32(NumColumns - 2))) + 1
          // cnt = 9
-        var list = [UInt32](), mult = 2
+        var list = [UInt32](),
+            mult = tmpskill
         
         for (var i=cnt; i>0; i--) {
             for x in 0...mult {
                 list.append(i)
             }
-            mult *= 2
+            mult *= (1 / tmpskill) * 4
         }
         
-        var pad = Array(count: mult + 10, repeatedValue: UInt32(0))
+        var pad = Array(count: mult + (20 / tmpskill), repeatedValue: UInt32(0))
         list += pad
             
         //println("list: \(list)")

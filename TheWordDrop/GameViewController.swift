@@ -24,7 +24,8 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     var attachmentBehavior : UIAttachmentBehavior!
     var snapBehavior : UISnapBehavior!
     var bgmusicIV: UIImageView!, soundIV: UIImageView!, speakIV: UIImageView!, exitIV: UIImageView!
-
+    var lastTouch = CGPoint(x: 0, y: 0)
+    
     var views = [String:SKView]()
     
     let transition = SKTransition.pushWithDirection(.Left, duration: NSTimeInterval(3.0))
@@ -283,7 +284,7 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         // prevent the user moving the alert view on the screen before it is shown.
         // Remember, on load, the alert view is created but invisible to user, so you
         // don't want the user moving it around when they swipe or drag on the screen.
-        createGestureRecognizer()
+        // createGestureRecognizer()
         
         animator.removeAllBehaviors()
         
@@ -335,11 +336,20 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         
     }
     
+    func columnForPoint(point:CGPoint)->Int {
+        var column = 0
+        
+        column = Int(round(point.x / gameScene.BlockSize) + 1)
+        
+        return column
+    }
+    
+/*
     func createGestureRecognizer() {
         let panGestureRecognizer: UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: Selector("handlePan:"))
         view.addGestureRecognizer(panGestureRecognizer)
     }
-    
+*/
     func pauseSceneDidFinish(myScene: PauseScene, command:String) {
         myScene.view?.removeFromSuperview()
         //println("pauseSceneDidFinish with command: \(command)")
@@ -407,9 +417,10 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     
     @IBAction func didPan(sender: UIPanGestureRecognizer) {
         let currentPoint = sender.translationInView(self.view)
+        
         if let originalPoint = panPointReference {
             // #3
-            if abs(currentPoint.x - originalPoint.x) > (core.data.BlockSize * 0.5) {
+            if abs(currentPoint.x - originalPoint.x) > (core.data.BlockSize * 0.4) {
                 // #4
                 if sender.velocityInView(self.view).x > CGFloat(0) {
                     theworddrop.moveShapeRight()
@@ -422,9 +433,6 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         } else if sender.state == .Began {
             panPointReference = currentPoint
         }
-    }
-    
-    func handlePan(sender: UIPanGestureRecognizer) {
         
         if (alertView != nil) {
             let panLocationInView = sender.locationInView(view)
@@ -454,7 +462,59 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         }
         
     }
-
+    
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        println("in touchesBegan")
+        let touch = touches.first as! UITouch
+        let location = touch.locationInView(self.view)
+        println("location: \(location)")
+        
+/*
+        var deltaX = lastTouch.x - location.x,
+            deltaY = lastTouch.y - location.y
+        
+            println("Moved \(deltaX) horizontally")
+            println("Moved \(deltaY) vertically")
+        
+        if (lastTouch.x < location.x) {
+            theworddrop.moveShapeRight()
+        } else {
+            theworddrop.moveShapeLeft()
+        }
+*/
+        lastTouch = location
+    }
+    
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        println("in touchesMoved")
+        let touch = touches.first as! UITouch
+        
+        let location = touch.locationInView(self.view)
+        println("location: \(location)")
+        println("lastTouch: \(lastTouch)")
+        
+        var deltaX = lastTouch.x - location.x,
+            deltaY = lastTouch.y - location.y
+        
+            println("Moved \(deltaX) horizontally")
+            println("Moved \(deltaY) vertically")
+        if (lastTouch.x < location.x) {
+            theworddrop.moveShapeRight()
+        } else {
+            theworddrop.moveShapeLeft()
+        }
+        lastTouch = location
+    }
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        println("in touchesEnded")
+        
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(gameScene)
+            println("location: \(location)")
+            var delta = location
+        }
+     }
     func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
@@ -532,8 +592,8 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
         
         gameScene.animateLevelUp(Int(theworddrop.level))
         
-        if gameScene.tickLengthMillis >= 10 {
-            gameScene.tickLengthMillis -= 10
+        if gameScene.tickLengthMillis >= 100 {
+            gameScene.tickLengthMillis -= 50 * Double(theworddrop.level)
         } else if gameScene.tickLengthMillis > 0 {
             gameScene.tickLengthMillis -= 1
         } else {
@@ -554,9 +614,8 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     }
     
     func gameShapeDidLand(theworddrop: TheWordDrop) {
-        gameScene.stopTicking()
+        //gameScene.stopTicking()
         self.view.userInteractionEnabled = false
-        
         let removedWords = theworddrop.removeCompletedWords()
         if removedWords.tilesRemoved.count > 0 {
             self.scoreLabel.text = "\(theworddrop.score)"
@@ -585,9 +644,9 @@ class GameViewController: UIViewController, TheWordDropDelegate, UIGestureRecogn
     
     // #3
     func gameShapeDidMove(theworddrop: TheWordDrop) {
+        gameScene.redrawShape(theworddrop.fallingShape!) {}
         if Int(theworddrop.level) != core.data.level {
             gameDidLevelUp(theworddrop)
         }
-        gameScene.redrawShape(theworddrop.fallingShape!) {}
     }
 }

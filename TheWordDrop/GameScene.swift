@@ -9,7 +9,7 @@
 import SpriteKit
 import AVFoundation
 
-let TickLengthLevelOne = NSTimeInterval(700 - (core.data.prefs["skill"] as! Double  * 50))
+let TickLengthLevelOne = NSTimeInterval(1000 - (core.data.prefs["skill"] as! Double  * 200))
 
 extension String {
     func toBool() -> Bool? {
@@ -156,19 +156,13 @@ class GameScene: SKScene {
     func playBackgroundMusic() {
         
         if core.data.musicPlayer == nil {
-            var bgMIDIPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mid")!
-            var midi = AVMIDIPlayer(contentsOfURL: bgMIDIPath, soundBankURL: nil, error: nil)
-            if midi == nil {
-                    println("AVMIDIPlayer failed")
-            }
-            midi.play(nil)
-            // var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
+            var bgsoundPath:NSURL = NSBundle.mainBundle().URLForResource("theme", withExtension: "mp3")!
         
-            // var error: NSError?
-            // core.data.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
-            // core.data.musicPlayer!.volume = 0.5
-            // core.data.musicPlayer!.numberOfLoops = -1
-            // core.data.musicPlayer!.prepareToPlay()
+            var error: NSError?
+            core.data.musicPlayer = AVAudioPlayer(contentsOfURL: bgsoundPath, error: &error)
+            core.data.musicPlayer!.volume = 0.5
+            core.data.musicPlayer!.numberOfLoops = -1
+            core.data.musicPlayer!.prepareToPlay()
         }
         if core.data.prefs["bgmusic"] as! Bool == true {
             core.data.musicPlayer!.play()
@@ -273,11 +267,7 @@ class GameScene: SKScene {
             var myletter = SKLabelNode(fontNamed: "AvenirNext-Bold");
             myletter.text = block.letter
             
-            //       original = 22
-            //                  28
             myletter.fontSize = self.size.height * 0.039 // 35
-            //                          x:-1.5, y:-8
-            //
             myletter.position = CGPoint(x:self.size.height * 0.026, y:self.size.height * 0.015)
             myletter.fontColor = SKColor.blackColor()
             
@@ -285,11 +275,7 @@ class GameScene: SKScene {
             
             var myvalue = SKLabelNode(fontNamed: "AvenirNext-Medium");
             myvalue.text = "\(LetterValues[myletter.text]!)"
-            //                  7
-            //                 12
             myvalue.fontSize = self.size.height * 0.013 // 15
-            //                         x:8.75, y:-12.5
-            //                         x:12,   y:-15
             myvalue.position = CGPoint(x:self.size.height * 0.045, y:3)
             myvalue.fontColor = SKColor.blackColor()
             
@@ -347,11 +333,11 @@ class GameScene: SKScene {
         for (idx, block) in enumerate(shape.blocks) {
             let sprite = block.sprite!
             let moveTo = pointForColumn(block.column, row:block.row)
-            let moveToAction:SKAction = SKAction.moveTo(moveTo, duration: 0.05)
+            let moveToAction:SKAction = SKAction.moveTo(moveTo, duration: 0.1)
             moveToAction.timingMode = .EaseOut
             sprite.runAction(moveToAction, completion: nil)
         }
-        runAction(SKAction.waitForDuration(0.05), completion: completion)
+        runAction(SKAction.waitForDuration(0.1), completion: completion)
     }
     
     func animateLevelUp(level:Int) {
@@ -374,7 +360,7 @@ class GameScene: SKScene {
 
         
         actions.append(SKAction.fadeOutWithDuration(NSTimeInterval(3)))
-        actions.append(SKAction.scaleTo(6.0, duration: NSTimeInterval(3)))
+        actions.append(SKAction.scaleTo(5.0, duration: NSTimeInterval(3)))
         
         let group = SKAction.group(actions);
         banner.runAction(SKAction.sequence([SKAction.scaleTo(2.0, duration: NSTimeInterval(1)), SKAction.waitForDuration(delay), group, SKAction.removeFromParent()]))

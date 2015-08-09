@@ -26,6 +26,8 @@ class GameOverViewController: UIViewController {
     @IBOutlet weak var wordList: UITextView!
     @IBAction func playagainAction(sender: UIButton) {
      }
+    override func viewDidAppear(animated: Bool) {
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -50,13 +52,13 @@ class GameOverViewController: UIViewController {
         if (core.data.foundWords.count > 0) {
             for w in 0...core.data.foundWords.count - 1 {
                 var word = core.data.foundWords[w]
-                var attrs = [NSFontAttributeName: UIFont.systemFontOfSize(16.0), "idnum":w, "desc":word, "points":core.data.foundPoints[w], "bonus":core.data.foundBonus[w]]
-                var bs = ""
+                var attrs = [NSFontAttributeName: UIFont.systemFontOfSize(16.0), "idnum":w, "desc":word, "points":core.data.foundPoints[w], "bonus":core.data.foundBonus[w], NSForegroundColorAttributeName: UIColor.yellowColor() ]
+                var bs = "\t"
                 if (core.data.foundBonus[w] != "") {
                     attrs["NSBackgroundColorAttributeName"] = UIColor.yellowColor()
                     bs = " [\(core.data.foundBonus[w])] "
                 }
-                var str = word + "\(bs) +\(core.data.foundPoints[w])\n"
+                var str = word + "\t\(bs)\t+\(core.data.foundPoints[w])\n"
                 var range = NSRange(location: 0, length: count(str))
 
                 var wordText = NSMutableAttributedString(string: str, attributes: attrs)
@@ -102,7 +104,7 @@ class GameOverViewController: UIViewController {
             
         }
         
-        for lab in [self.levelLabel, self.tilesLabel, self.scoreTitle, self.levelTitle, self.tilesTitle, self.scoreLabel] {
+        for lab in [self.menuButton.titleLabel!, self.playButton.titleLabel!, self.levelLabel, self.tilesLabel, self.scoreTitle, self.levelTitle, self.tilesTitle, self.scoreLabel] {
             let f = lab.font
             let s = lab.frame.size
             lab.font = f.fontWithSize(f.pointSize + CGFloat(fontAdjustment))

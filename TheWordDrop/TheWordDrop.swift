@@ -422,45 +422,70 @@
     func explodeBomb(bombs:Array<Block?>) -> Array<Block> {
         var tmpblocks = Array<Block>()
         for bomb in bombs {
-            tmpblocks.append(bomb!)
-            if bomb!.column >= 1 {
-                if blockArray[bomb!.column - 1, bomb!.row] != nil {
-                    tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row]!)
-                }
-                
-                if (bomb!.row < NumRows - 1) {
-                    if blockArray[bomb!.column - 1, bomb!.row + 1] != nil {
-                        tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row + 1]!)
-                    }
-                }
-                
-                if (bomb!.row > 1) {
-                    if blockArray[bomb!.column - 1, bomb!.row - 1] != nil {
-                        tmpblocks.append(blockArray[bomb!.column - 1, bomb!.row - 1]!)
-                    }
-                }
+            var power = 1
+            
+            switch bomb!.color {
+            case .Grey:
+                power = 1
+            case .Blue:         // 2L
+                power = 2
+            case .Orange:       // 3L
+                power = 2
+            case .Purple:       // 4L
+                power = 3
+            case .Red:          // 2W
+                power = 3
+            case .Teal:         // 3W
+                power = 2
+            case .Yellow:       // 4W
+                power = 2
+            default:
+                power = 1
             }
             
-            if bomb!.column < NumColumns - 1 {
-                if blockArray[bomb!.column + 1, bomb!.row] != nil {
-                    tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row]!)
-                }
-                
-                if bomb!.row > 1 {
-                    if blockArray[bomb!.column + 1, bomb!.row - 1] != nil {
-                        tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row - 1]!)
+            tmpblocks.append(bomb!)
+            
+            for pwr in 1...power {
+
+                if bomb!.column >= pwr {
+                    if blockArray[bomb!.column - pwr, bomb!.row] != nil {
+                        tmpblocks.append(blockArray[bomb!.column - pwr, bomb!.row]!)
+                    }
+                    
+                    if (bomb!.row < NumRows - pwr) {
+                        if blockArray[bomb!.column - pwr, bomb!.row + pwr] != nil {
+                            tmpblocks.append(blockArray[bomb!.column - pwr, bomb!.row + pwr]!)
+                        }
+                    }
+                    
+                    if (bomb!.row > pwr) {
+                        if blockArray[bomb!.column - pwr, bomb!.row - pwr] != nil {
+                            tmpblocks.append(blockArray[bomb!.column - pwr, bomb!.row - pwr]!)
+                        }
                     }
                 }
                 
-                if bomb!.row < NumRows - 1 {
-                    if blockArray[bomb!.column + 1, bomb!.row + 1] != nil {
-                        tmpblocks.append(blockArray[bomb!.column + 1, bomb!.row + 1]!)
+                if bomb!.column < NumColumns - pwr {
+                    if blockArray[bomb!.column + pwr, bomb!.row] != nil {
+                        tmpblocks.append(blockArray[bomb!.column + pwr, bomb!.row]!)
+                    }
+                    
+                    if bomb!.row > pwr {
+                        if blockArray[bomb!.column + pwr, bomb!.row - pwr] != nil {
+                            tmpblocks.append(blockArray[bomb!.column + pwr, bomb!.row - pwr]!)
+                        }
+                    }
+                    
+                    if bomb!.row < NumRows - pwr {
+                        if blockArray[bomb!.column + pwr, bomb!.row + pwr] != nil {
+                            tmpblocks.append(blockArray[bomb!.column + pwr, bomb!.row + pwr]!)
+                        }
                     }
                 }
-            }
-            if (bomb!.row < NumRows - 1) {
-                if blockArray[bomb!.column, bomb!.row + 1] != nil {
-                    tmpblocks.append(blockArray[bomb!.column, bomb!.row + 1]!)
+                if (bomb!.row < NumRows - pwr) {
+                    if blockArray[bomb!.column, bomb!.row + pwr] != nil {
+                        tmpblocks.append(blockArray[bomb!.column, bomb!.row + pwr]!)
+                    }
                 }
             }
         }

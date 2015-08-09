@@ -41,8 +41,9 @@ class DataManager {
         foundPoints = [Int](),
         foundBonus = [String](),
         totalTiles:Int = 0,
-    score:Int = 0
-    
+        score:Int = 0,
+        NumColumns:Int = 8,
+        NumRows:Int = 18
     
     var bigrams = [ "TH","HE","IN","ER","AN","RE","ON","AT","EN","ND","TI",
                     "ES","OR","TE","OF","ED","IS","IT","AL","AR","ST","TO",

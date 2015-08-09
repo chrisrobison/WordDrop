@@ -119,13 +119,27 @@ class Block: Hashable, Printable {
 
     convenience init(column:Int, row:Int, letter:String) {
         var letter = letter
-        var color = BlockColor.random()
+        var color:BlockColor
+        
+        if (letter == "💣") {
+            color = BlockColor.Blue
+        } else {
+            color = BlockColor.random()
+        }
+        
         self.init(column: column, row:row, color:color, letter:letter)
     }
     
     convenience init(column:Int, row:Int) {
         var letter = core.data.getLetter()
-        var color = BlockColor.random()
+        var color:BlockColor
+        
+        if (letter == "💣") {
+            color = BlockColor.Blue
+        } else {
+            color = BlockColor.random()
+        }
+        
         self.init(column:column, row:row, color:color, letter:letter)
     }
 }
