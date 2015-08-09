@@ -65,7 +65,6 @@
 		266D3F891B3673DC0074F0CB /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 266D3F881B3673DC0074F0CB /* pause.png */; };
 		266D3F8B1B3688140074F0CB /* PauseScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266D3F8A1B3688140074F0CB /* PauseScene.swift */; };
 		266D3F8F1B378E890074F0CB /* bomb2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 266D3F8E1B378E890074F0CB /* bomb2.mp3 */; };
-		266D689E1B32573F004E845B /* startup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 266D689D1B32573F004E845B /* startup-bg.png */; };
 		267C8FF41B155CF900724CCE /* GameOverScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 267C8FF31B155CF900724CCE /* GameOverScene.sks */; };
 		268219DE1B145292000AD0B6 /* AppIcon.appiconset in Resources */ = {isa = PBXBuildFile; fileRef = 268219DD1B145292000AD0B6 /* AppIcon.appiconset */; };
 		269B58A31B23F05D0095488E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 269B589F1B23F05D0095488E /* Default-568h@2x.png */; };
@@ -82,6 +81,7 @@
 		26EA60E81B090A0A00C83B44 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E71B090A0A00C83B44 /* logo.png */; };
 		26EA60EB1B09720300C83B44 /* blackbg2.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60E91B09720300C83B44 /* blackbg2.png */; };
 		26EA60EC1B09720300C83B44 /* blackbg2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 26EA60EA1B09720300C83B44 /* blackbg2@2x.png */; };
+		26F637AB1B43D826000C2633 /* startup-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 26F637AA1B43D826000C2633 /* startup-bg.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +157,6 @@
 		266D3F881B3673DC0074F0CB /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
 		266D3F8A1B3688140074F0CB /* PauseScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseScene.swift; sourceTree = "<group>"; };
 		266D3F8E1B378E890074F0CB /* bomb2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bomb2.mp3; sourceTree = "<group>"; };
-		266D689D1B32573F004E845B /* startup-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "startup-bg.png"; sourceTree = "<group>"; };
 		267C8FF31B155CF900724CCE /* GameOverScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameOverScene.sks; sourceTree = "<group>"; };
 		268219DD1B145292000AD0B6 /* AppIcon.appiconset */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AppIcon.appiconset; path = "../Library/Containers/com.apple.mail/Data/Library/Mail Downloads/8B843DF2-8916-42D5-B435-0CB5D7941484/icon/ios/AppIcon.appiconset"; sourceTree = "<group>"; };
 		269B589F1B23F05D0095488E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -174,6 +173,7 @@
 		26EA60E71B090A0A00C83B44 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		26EA60E91B09720300C83B44 /* blackbg2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackbg2.png; sourceTree = "<group>"; };
 		26EA60EA1B09720300C83B44 /* blackbg2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackbg2@2x.png"; sourceTree = "<group>"; };
+		26F637AA1B43D826000C2633 /* startup-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "startup-bg.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -281,7 +281,7 @@
 				264885551B001CD600C66482 /* all.json */,
 				26121BA71B29427E00179A68 /* btn-bg.png */,
 				266D3F881B3673DC0074F0CB /* pause.png */,
-				266D689D1B32573F004E845B /* startup-bg.png */,
+				26F637AA1B43D826000C2633 /* startup-bg.png */,
 				26BED6951B25383B00AF1E21 /* help-640.png */,
 				2658A9381B2CC4BA00332C1E /* spark2.png */,
 				26BED6961B25383B00AF1E21 /* help-750.png */,
@@ -441,7 +441,6 @@
 				26BED69A1B25383B00AF1E21 /* help-1242.png in Resources */,
 				26BED6991B25383B00AF1E21 /* help-750.png in Resources */,
 				269B58A61B23F05D0095488E /* Default@2x.png in Resources */,
-				266D689E1B32573F004E845B /* startup-bg.png in Resources */,
 				2661FF2E1AE86BEB00FA4284 /* greybg.png in Resources */,
 				261272EC1B1BDF4A00C132D4 /* Settings.bundle in Resources */,
 				269B58A31B23F05D0095488E /* Default-568h@2x.png in Resources */,
@@ -470,6 +469,7 @@
 				264301081B1EBDB7006C09E1 /* spark.png in Resources */,
 				2661FF071AE47F8F00FA4284 /* whitebg@2x.png in Resources */,
 				261272EE1B1C3CB000C132D4 /* Images.xcassets in Resources */,
+				26F637AB1B43D826000C2633 /* startup-bg.png in Resources */,
 				261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */,
 				269B58AA1B243E640095488E /* confetti.png in Resources */,
 				267C8FF41B155CF900724CCE /* GameOverScene.sks in Resources */,
