@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		26071C701B1FB6410003E286 /* spark.sks in Resources */ = {isa = PBXBuildFile; fileRef = 26071C6F1B1FB6410003E286 /* spark.sks */; };
-		260EC4A51B3CEEBC004FAB3B /* theme.mid in Resources */ = {isa = PBXBuildFile; fileRef = 260EC4A41B3CEEBC004FAB3B /* theme.mid */; };
 		26121BA81B29427E00179A68 /* btn-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 26121BA71B29427E00179A68 /* btn-bg.png */; };
 		26121BAD1B2A96C200179A68 /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26121BAC1B2A96C200179A68 /* OptionsViewController.swift */; };
 		261272E71B1ABADF00C132D4 /* Help-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 261272E51B1ABADF00C132D4 /* Help-568h@2x.png */; };
@@ -95,7 +94,6 @@
 
 /* Begin PBXFileReference section */
 		26071C6F1B1FB6410003E286 /* spark.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = spark.sks; sourceTree = "<group>"; };
-		260EC4A41B3CEEBC004FAB3B /* theme.mid */ = {isa = PBXFileReference; lastKnownFileType = audio.midi; name = theme.mid; path = "../../worddrop-assets/theme.mid"; sourceTree = "<group>"; };
 		26121BA71B29427E00179A68 /* btn-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "btn-bg.png"; sourceTree = "<group>"; };
 		26121BAC1B2A96C200179A68 /* OptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
 		261272E51B1ABADF00C132D4 /* Help-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Help-568h@2x.png"; sourceTree = "<group>"; };
@@ -219,7 +217,6 @@
 				2661FF201AE712EF00FA4284 /* gameover.mp3 */,
 				2661FF211AE712EF00FA4284 /* levelup.mp3 */,
 				2661FF221AE712EF00FA4284 /* theme.mp3 */,
-				260EC4A41B3CEEBC004FAB3B /* theme.mid */,
 			);
 			name = Audio;
 			sourceTree = "<group>";
@@ -433,7 +430,6 @@
 				2661FF021AE47F8F00FA4284 /* background.png in Resources */,
 				2661FF2F1AE86BEB00FA4284 /* greybg@2x.png in Resources */,
 				2661FF041AE47F8F00FA4284 /* gameboard.png in Resources */,
-				260EC4A51B3CEEBC004FAB3B /* theme.mid in Resources */,
 				264885561B001CD600C66482 /* all.json in Resources */,
 				26BED69A1B25383B00AF1E21 /* help-1242.png in Resources */,
 				26BED6991B25383B00AF1E21 /* help-750.png in Resources */,
